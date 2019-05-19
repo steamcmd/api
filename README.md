@@ -1,3 +1,3 @@
-# steamcmd-api
+# SteamCMD API
 
-First simple SteamCMD API
+Simple SteamCMD API
