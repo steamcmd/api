@@ -31,4 +31,4 @@ COPY src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "run:app"]
+CMD ["gunicorn", "--workers", "4", "--timeout", "60", "--bind", ":8000", "run:app"]
