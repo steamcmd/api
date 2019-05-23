@@ -101,7 +101,6 @@ def app(environ, start_response):
 
     # construct http response2
     start_response(status_code, [
-        #("Content-Type", "text/plain"),
         ("Content-Type", "application/json"),
         ("Content-Length", str(len(data)))
     ])
