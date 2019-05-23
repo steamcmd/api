@@ -68,7 +68,7 @@ def app(environ, start_response):
             status_code = '404 Not Found'
             content = {
                 'status' : 'error',
-                'description' : 'No information for this specific app id could be found'
+                'description' : 'No information for this specific app id could be found on Steam'
             }
 
         else:
