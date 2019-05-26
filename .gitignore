@@ -1,0 +1,4 @@
+*.pyc
+__pycache__
+.steam
+.bash_history
