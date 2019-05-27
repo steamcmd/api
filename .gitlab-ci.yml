@@ -8,6 +8,7 @@ image: alpine:latest
 stages:
   - lint
   - deploy
+  - after
 
 # lint Python code
 python lint:
@@ -27,8 +28,15 @@ docker lint:
 
 # deploy api to app engine
 deploy app:
-  state: deploy
+  stage: deploy
   image: jonakoudijs/gcloud:latest
   script:
     - gcloud app deploy --key-file $GCLOUD_SERVICE_KEY
   only: master
+
+# download latest SteamCMD
+connect api:
+  stage: after
+  script:
+    - apk add curl
+    - curl -i https://api.steamcmd.net/1
