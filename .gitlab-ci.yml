@@ -31,7 +31,8 @@ deploy app:
   stage: deploy
   image: jonakoudijs/gcloud:latest
   script:
-    - gcloud app deploy --key-file $GCLOUD_SERVICE_KEY
+    - gcloud auth activate-service-account --key-file=$GCLOUD_SERVICE_KEY
+    - gcloud app deploy
   only:
     - master
 
