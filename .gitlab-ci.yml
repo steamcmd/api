@@ -40,3 +40,4 @@ connect api:
   script:
     - apk add curl
     - curl -i https://api.steamcmd.net/1
+  only: master
