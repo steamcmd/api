@@ -27,7 +27,7 @@ docker lint:
     - git ls-files --exclude='Dockerfile*' --ignored | xargs hadolint
 
 # deploy api to app engine
-deploy app:
+app deploy:
   stage: deploy
   image: jonakoudijs/gcloud:latest
   script:
