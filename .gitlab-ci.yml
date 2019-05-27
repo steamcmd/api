@@ -11,13 +11,13 @@ stages:
   - after
 
 # lint Python code
-python lint:
-  stage: lint
-  image: python:3-alpine
-  script:
-    - apk add gcc git musl-dev
-    - pip install pylint
-    - git ls-files --exclude='*.py' --ignored | xargs pylint
+#python lint:
+#  stage: lint
+#  image: python:3-alpine
+#  script:
+#    - apk add gcc git musl-dev
+#    - pip install pylint
+#    - git ls-files --exclude='*.py' --ignored | xargs pylint
 
 # lint Dockerfiles
 docker lint:
