@@ -32,7 +32,7 @@ deploy app:
   image: jonakoudijs/gcloud:latest
   script:
     - gcloud auth activate-service-account --key-file=$GCLOUD_SERVICE_KEY
-    - gcloud app deploy
+    - gcloud app deploy --project=steamcmd
   only:
     - master
 
