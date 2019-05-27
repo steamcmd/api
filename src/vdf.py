@@ -10,7 +10,7 @@ def read(data):
     # default vars
     parent = []
     depth = 0
-    dict  = {}
+    dict = {}
 
     # loop through vdf
     for index, line in enumerate(data.splitlines()):

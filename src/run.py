@@ -16,9 +16,9 @@ def parse(uri):
     if uri.isdigit():
         # return orignal number
         return(uri)
-    else:
-        # return False
-        return(False)
+
+    # return False
+    return(False)
 
 
 # parse query string
@@ -60,7 +60,10 @@ def query(qstring):
 def steamcmd(gameid):
 
     # define steamcmd command
-    cmd = ['steamcmd', '+login', 'anonymous', '+app_info_update', '1', '+app_info_print', gameid, '+quit']
+    cmd = ['steamcmd', '+login', 'anonymous',
+           '+app_info_update', '1',
+           '+app_info_print', gameid,
+           '+quit']
     # execute steamcmd
     out = check_output(cmd)
     # decode bytes to string
