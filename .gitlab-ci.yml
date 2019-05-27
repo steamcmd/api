@@ -27,12 +27,13 @@ docker lint:
     - git ls-files --exclude='Dockerfile*' --ignored | xargs hadolint
 
 # deploy api to app engine
-app deploy:
+deploy app:
   stage: deploy
   image: jonakoudijs/gcloud:latest
   script:
     - gcloud app deploy --key-file $GCLOUD_SERVICE_KEY
-  only: master
+  only:
+    - master
 
 # download latest SteamCMD
 connect api:
@@ -40,4 +41,5 @@ connect api:
   script:
     - apk add curl
     - curl -i https://api.steamcmd.net/1
-  only: master
+  only:
+    - master
