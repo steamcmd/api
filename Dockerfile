@@ -13,7 +13,7 @@ ENV HOME /data
 # Update the repository and install prerequisites
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
- && apt-get install -y --no-install-recommends python3 python3-pip \
+ && apt-get install -y --no-install-recommends lib32stdc++6 python3 python3-pip \
  && pip3 install --no-cache-dir setuptools gunicorn \
  && rm -rf /var/lib/apt/lists/* \
  && pip3 uninstall pip -y
@@ -31,4 +31,4 @@ COPY src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
-CMD ["gunicorn", "--workers", "4", "--timeout", "60", "--bind", ":$PORT", "run:app"]
+CMD gunicorn --workers 1 --threads 8 --timeout 60 --bind :8080 run:app

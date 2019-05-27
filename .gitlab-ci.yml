@@ -1,0 +1,34 @@
+---
+# Gitlab CI file
+
+# docker image
+image: alpine:latest
+
+# stages
+stages:
+  - lint
+  - deploy
+
+# lint Python code
+python lint:
+  stage: lint
+  image: python:3-alpine
+  script:
+    - apk add gcc git musl-dev
+    - pip install pylint
+    - git ls-files --exclude='*.py' --ignored | xargs pylint
+
+# lint Dockerfiles
+docker lint:
+  stage: lint
+  image: jonakoudijs/hadolint:latest
+  script:
+    - git ls-files --exclude='Dockerfile*' --ignored | xargs hadolint
+
+# deploy api to app engine
+deploy app:
+  state: deploy
+  image: jonakoudijs/gcloud:latest
+  script:
+    - gcloud app deploy --key-file $GCLOUD_SERVICE_KEY
+  only: master
