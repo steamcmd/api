@@ -1,0 +1,4 @@
+ignored:
+  - DL3007 # Pin base image version
+  - DL3008 # Pin versions in apt-get install
+  - DL3013 # Pin versions in pip
