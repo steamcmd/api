@@ -2,7 +2,7 @@
 # Gitlab CI file
 
 # docker image
-image: alpine:latest
+image: google/cloud-sdk:alpine
 
 # stages
 stages:
@@ -29,10 +29,9 @@ docker lint:
 # deploy api to app engine
 deploy app:
   stage: deploy
-  image: jonakoudijs/gcloud:latest
   script:
     - gcloud auth activate-service-account --key-file=$GCLOUD_SERVICE_KEY
-    - gcloud app deploy --project=steamcmd
+    - gcloud app deploy --project=steamcmd app.yaml --quiet
   only:
     - master
 
@@ -40,7 +39,6 @@ deploy app:
 connect api:
   stage: after
   script:
-    - apk add curl
-    - curl -i https://api.steamcmd.net/1
+    - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/1
   only:
     - master
