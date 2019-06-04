@@ -13,14 +13,13 @@ services:
 
 # stages
 stages:
-  - lint
-  - test
+  - validate
   - deploy
   - after
 
 # lint Python code
 python lint:
-  stage: lint
+  stage: validate
   script:
     - apk add gcc git musl-dev
     - pip install pylint
@@ -28,14 +27,14 @@ python lint:
 
 # lint Dockerfiles
 docker lint:
-  stage: lint
+  stage: validate
   image: jonakoudijs/hadolint:latest
   script:
     - git ls-files --exclude='Dockerfile*' --ignored | xargs hadolint
 
 # test Python code
 python test:
-  stage: test
+  stage: validate
   script:
     - apk add gcc git musl-dev
     - pip install pylint
@@ -55,10 +54,11 @@ deploy app:
     - master
 
 # download latest SteamCMD
-connect api:
+warmup api:
   stage: after
   script:
     - apk add curl
+    - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/1
     - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/1
   only:
     - master
