@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+"""
+Main application and entrypoint.
+"""
 
 # imports
 from subprocess import check_output
@@ -7,6 +10,9 @@ import vdf
 
 # parse uri
 def parse(uri):
+    """
+    Parse URI and return given number.
+    """
 
     # strip first fw slash
     if uri[0] == '/':
@@ -15,14 +21,17 @@ def parse(uri):
     # check if proper number
     if uri.isdigit():
         # return orignal number
-        return(uri)
+        return uri
 
     # return False
-    return(False)
+    return False
 
 
 # parse query string
 def query(qstring):
+    """
+    Parse query parameters and return dictionary.
+    """
 
     # try parsing query string else fail
     try:
@@ -48,8 +57,10 @@ def query(qstring):
             # add key/value to dict
             pdict[param[0]] = param[1]
 
-    except:
+    except IndexError as query_error:
 
+        print('The following error occured while trying to parse the query string: \n > ' \
+               + str(query_error))
         pdict = False
 
     # return parsed parameters in dict or error
@@ -58,6 +69,9 @@ def query(qstring):
 
 # execute steamcmd
 def steamcmd(gameid):
+    """
+    Execute steamcmd and return all output.
+    """
 
     # define steamcmd command
     cmd = ['steamcmd', '+login', 'anonymous',
@@ -70,11 +84,15 @@ def steamcmd(gameid):
     out = out.decode('UTF-8')
 
     # return steamcmd output
-    return(out)
+    return out
 
 
 # strip steamcmd output
 def strip(output, gameid):
+    """
+    Strip all unnecessary steamcmd output and
+    only return app_info data.
+    """
 
     # remove steamcmd info
     output = output[output.find('"' + gameid + '"'):]
@@ -82,11 +100,14 @@ def strip(output, gameid):
     output += '}'
 
     # return stripped output
-    return(output)
+    return output
 
 
 # app definition
 def app(env, start_response):
+    """
+    Main application definition and entrypoint.
+    """
 
     # default values
     pretty_enabled = 0
@@ -140,7 +161,8 @@ def app(env, start_response):
                 status_code = '404 Not Found'
                 content = {
                     'status' : 'error',
-                    'description' : 'No information for this specific app id could be found on Steam'
+                    'description' : 'No information for this specific app id' \
+                                    ' could be found on Steam'
                 }
 
             else:

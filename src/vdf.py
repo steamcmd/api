@@ -10,10 +10,10 @@ def read(data):
     # default vars
     parent = []
     depth = 0
-    dict = {}
+    vdict = {}
 
     # loop through vdf
-    for index, line in enumerate(data.splitlines()):
+    for line in data.splitlines():
 
         # split line string
         split = shlex.split(line)
@@ -26,7 +26,8 @@ def read(data):
 
         # error if unexpected word count of current line
         if count > 2:
-            print('The line: ' + line + ' contains an invalid number of words. This must be 1 or 2!')
+            print('The line: ' + line +
+                  ' contains an invalid number of words. This must be 1 or 2!')
             sys.exit(1)
 
         # increase / decrease depth to track dict level
@@ -45,10 +46,10 @@ def read(data):
                 # add current line
                 if count == 2:
                     # add key value
-                    dict[key] = val
+                    vdict[key] = val
                 if count == 1:
                     # add dict of key
-                    dict[key] = {}
+                    vdict[key] = {}
                     # set key as new parent
                     parent.append(key)
 
@@ -57,10 +58,10 @@ def read(data):
                 # add current line
                 if count == 2:
                     # add key value
-                    dict[parent[0]][key] = val
+                    vdict[parent[0]][key] = val
                 if count == 1:
                     # add dict of key
-                    dict[parent[0]][key] = {}
+                    vdict[parent[0]][key] = {}
                     # set key as new parent
                     parent.append(key)
 
@@ -69,10 +70,10 @@ def read(data):
                 # add current line
                 if count == 2:
                     # add key value
-                    dict[parent[0]][parent[1]][key] = val
+                    vdict[parent[0]][parent[1]][key] = val
                 if count == 1:
                     # add dict of key
-                    dict[parent[0]][parent[1]][key] = {}
+                    vdict[parent[0]][parent[1]][key] = {}
                     # set key as new parent
                     parent.append(key)
 
@@ -81,10 +82,10 @@ def read(data):
                 # add current line
                 if count == 2:
                     # add key value
-                    dict[parent[0]][parent[1]][parent[2]][key] = val
+                    vdict[parent[0]][parent[1]][parent[2]][key] = val
                 if count == 1:
                     # add dict of key
-                    dict[parent[0]][parent[1]][parent[2]][key] = {}
+                    vdict[parent[0]][parent[1]][parent[2]][key] = {}
                     # set key as new parent
                     parent.append(key)
 
@@ -93,10 +94,10 @@ def read(data):
                 # add current line
                 if count == 2:
                     # add key value
-                    dict[parent[0]][parent[1]][parent[2]][parent[3]][key] = val
+                    vdict[parent[0]][parent[1]][parent[2]][parent[3]][key] = val
                 if count == 1:
                     # add dict of key
-                    dict[parent[0]][parent[1]][parent[2]][parent[3]][key] = {}
+                    vdict[parent[0]][parent[1]][parent[2]][parent[3]][key] = {}
                     # set key as new parent
                     parent.append(key)
 
@@ -105,10 +106,10 @@ def read(data):
                 # add current line
                 if count == 2:
                     # add key value
-                    dict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][key] = val
+                    vdict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][key] = val
                 if count == 1:
                     # add dict of key
-                    dict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][key] = {}
+                    vdict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][key] = {}
                     # set key as new parent
                     parent.append(key)
 
@@ -117,10 +118,10 @@ def read(data):
                 # add current line
                 if count == 2:
                     # add key value
-                    dict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][parent[5]][key] = val
+                    vdict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][parent[5]][key] = val
                 if count == 1:
                     # add dict of key
-                    dict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][parent[5]][key] = {}
+                    vdict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][parent[5]][key] = {}
                     # set key as new parent
                     parent.append(key)
 
@@ -129,11 +130,11 @@ def read(data):
                 # add current line
                 if count == 2:
                     # add key value
-                    dict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][parent[5]][key][parent[6]][key] = val
+                    vdict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][parent[5]][key][parent[6]][key] = val
                 if count == 1:
                     # add dict of key
-                    dict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][parent[5]][key][parent[6]][key] = {}
+                    vdict[parent[0]][parent[1]][parent[2]][parent[3]][parent[4]][parent[5]][key][parent[6]][key] = {}
                     # set key as new parent
                     parent.append(key)
 
-    return(dict)
+    return vdict

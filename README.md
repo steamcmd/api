@@ -2,7 +2,6 @@
 
 Simple SteamCMD API
 
-
 ### Container Image
 
 The API is run via a Docker image which contains both the `steamcmd` binary and the Python code which is wrapped around it.
@@ -14,7 +13,20 @@ docker run -ti -p 8080:8080 steamcmd-api:latest
 ### Deploying
 
 The SteamCMD API is automatically deployed on Google AppEngine when commits are done to/merged into master. This is done via the Gitlab pipeline.
-If you want or need to deploy manually you will have to authenticate locally and use the following deployment commands:
+If you want or need to deploy manually you will have to authenticate locally:
 ```
-gcloud app deploy --project steamcmd
+gcloud auth activate-service-account --key-file=key.json
+```
+And use the following deployment command:
+```
+gcloud app deploy --project=steamcmd app.yaml --quiet
+```
+
+### Development
+
+The easiest way to spin up the development environment is using the Docker container itself.
+Just mount the `src` directory in `/data` in the container and add `--reload` to the Gunicorn command:
+```
+docker run -v "$(pwd)"/src:/data -p 8080:8080 -ti steamcmd-api:latest \
+  gunicorn --workers 1 --threads 8 --timeout 120 --bind :8080 run:app --reload
 ```

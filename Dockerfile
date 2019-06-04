@@ -31,4 +31,4 @@ COPY src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
-CMD ["gunicorn", "--workers", "1", "--threads", "8", "--timeout", "60", "--bind", ":8080", "run:app"]
+CMD gunicorn --workers 1 --threads 8 --timeout 120 --bind :$PORT run:app

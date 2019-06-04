@@ -2,22 +2,29 @@
 # Gitlab CI file
 
 # docker image
-image: google/cloud-sdk:alpine
+image: python:3-alpine
+
+# define DIND vars
+ variables:
+   DOCKER_HOST: tcp://docker:2375/
+   DOCKER_DRIVER: overlay2
+ services:
+   - docker:dind
 
 # stages
 stages:
   - lint
+  - test
   - deploy
   - after
 
 # lint Python code
-#python lint:
-#  stage: lint
-#  image: python:3-alpine
-#  script:
-#    - apk add gcc git musl-dev
-#    - pip install pylint
-#    - git ls-files --exclude='*.py' --ignored | xargs pylint
+python lint:
+  stage: lint
+  script:
+    - apk add gcc git musl-dev
+    - pip install pylint
+    - git ls-files --exclude='*.py' --ignored | xargs pylint --exit-zero
 
 # lint Dockerfiles
 docker lint:
@@ -26,12 +33,23 @@ docker lint:
   script:
     - git ls-files --exclude='Dockerfile*' --ignored | xargs hadolint
 
+# test Python code
+python test:
+  stage: test
+  script:
+    - apk add gcc git musl-dev
+    - pip install pylint
+    - git ls-files --exclude='*.py' --ignored | xargs pylint --errors-only
+
 # deploy api to app engine
 deploy app:
   stage: deploy
+  image: docker:stable
   script:
-    - gcloud auth activate-service-account --key-file=$GCLOUD_SERVICE_KEY
-    - gcloud app deploy --project=steamcmd app.yaml --quiet
+    - apk add bash curl nodejs
+    - curl https://cli-assets.heroku.com/install.sh | sh
+    - heroku container:push web --app steamcmd
+    - heroku container:release web --app steamcmd
   only:
     - master
 
@@ -39,6 +57,7 @@ deploy app:
 connect api:
   stage: after
   script:
+    - apk add curl
     - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/1
   only:
     - master
