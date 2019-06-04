@@ -48,6 +48,7 @@ deploy app:
   script:
     - apk add bash curl nodejs
     - curl https://cli-assets.heroku.com/install.sh | sh
+    - heroku container:login
     - heroku container:push web --app steamcmd
     - heroku container:release web --app steamcmd
   only:
