@@ -7,19 +7,28 @@ Simple SteamCMD API
 The API is run via a Docker image which contains both the `steamcmd` binary and the Python code which is wrapped around it.
 To run the container you will have supply a port as well. For example:
 ```
-docker run -ti -p 8080:8080 steamcmd-api:latest
+docker run -p 8080:8080 -ti steamcmd-api:latest -e "PORT=8080"
 ```
 
 ### Deploying
 
-The SteamCMD API is automatically deployed on Google AppEngine when commits are done to/merged into master. This is done via the Gitlab pipeline.
+The SteamCMD API is automatically deployed on Heroku when commits are done to/merged into master. This is done via the Gitlab pipeline.
 If you want or need to deploy manually you will have to authenticate locally:
 ```
-gcloud auth activate-service-account --key-file=key.json
+heroku container:login
 ```
-And use the following deployment command:
+And use the following deployment commands:
 ```
-gcloud app deploy --project=steamcmd app.yaml --quiet
+heroku container:push web --app steamcmd
+heroku container:release web --app steamcmd
+```
+
+### Management
+
+Management of the app is done mainly via the Heroku Dashboard. But some other services are used as well.
+Timber.io is used for logging and can be looked into by executing locally:
+```
+heroku addons:open timber-logging
 ```
 
 ### Development
@@ -27,6 +36,7 @@ gcloud app deploy --project=steamcmd app.yaml --quiet
 The easiest way to spin up the development environment is using the Docker container itself.
 Just mount the `src` directory in `/data` in the container and add `--reload` to the Gunicorn command:
 ```
-docker run -v "$(pwd)"/src:/data -p 8080:8080 -ti steamcmd-api:latest \
-  gunicorn --workers 1 --threads 8 --timeout 120 --bind :8080 run:app --reload
+docker run -v "$(pwd)"/src:/data -p 8080:8080 -ti steamcmd-api:latest -e "PORT=8080" \
+  gunicorn --workers 1 --threads 8 --timeout 120 --bind :$PORT run:app --reload
 ```
+Now you can reach the SteamCMD API locally on [http://localhost:8080](http://localhost:8080)
