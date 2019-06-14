@@ -5,9 +5,13 @@ Simple SteamCMD API
 ### Container Image
 
 The API is run via a Docker image which contains both the `steamcmd` binary and the Python code which is wrapped around it.
+To locally build and test the container build it (locally) with Docker:
+```
+docker build -t steamcmd-api:test
+```
 To run the container you will have supply a port as well. For example:
 ```
-docker run -p 8080:8080 -ti steamcmd-api:latest -e "PORT=8080"
+docker run -p 8080:8080 -ti steamcmd-api:test -e "PORT=8080"
 ```
 
 ### Deploying
@@ -33,10 +37,9 @@ heroku addons:open timber-logging
 
 ### Development
 
-The easiest way to spin up the development environment is using the Docker container itself.
-Just mount the `src` directory in `/data` in the container and add `--reload` to the Gunicorn command:
+The easiest way to spin up the development environment is using the Docker container itself. Make sure you have build the image
+recently and just mount the `src` directory in `/data` in the container and set the required environment variables:
 ```
-docker run -v "$(pwd)"/src:/data -p 8080:8080 -ti steamcmd-api:latest -e "PORT=8080" \
-  gunicorn --workers 1 --threads 8 --timeout 120 --bind :$PORT run:app --reload
+docker run -v "$(pwd)"/src:/data -p 8080:8080 -e "PORT=8080" -e "GUNICORN_CMD_ARGS=--reload" -ti steamcmd-api:test
 ```
 Now you can reach the SteamCMD API locally on [http://localhost:8080](http://localhost:8080)
