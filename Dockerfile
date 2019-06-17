@@ -14,7 +14,7 @@ ENV HOME /data
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
  && apt-get install -y --no-install-recommends lib32stdc++6 python3 python3-pip \
- && pip3 install --no-cache-dir setuptools gunicorn \
+ && pip3 install --no-cache-dir setuptools gunicorn redis \
  && rm -rf /var/lib/apt/lists/* \
  && pip3 uninstall pip -y
 
