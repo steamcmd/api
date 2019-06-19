@@ -5,10 +5,10 @@ Simple SteamCMD API
 ### Container Image
 
 The API is run via a Docker image which contains both the `steamcmd` binary and the Python code which is wrapped around it.
-To locally build and test the container (locally) with Docker:
+To build and run the container (locally) with Docker:
 ```
-docker build -t steamcmd-api:test
-docker run -p 8080:8080 -ti steamcmd-api:test -e "PORT=8080"
+docker build -t steamcmd-api:test .
+docker run -p 8080:8080 -d steamcmd-api:test -e "PORT=8080"
 ```
 
 ### Deploying
