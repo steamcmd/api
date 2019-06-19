@@ -6,11 +6,11 @@ Main application and entrypoint.
 # imports modules
 from subprocess import check_output
 import json
-import vdf
 import redis
 
 # import custom
 import cfg as config
+import vdf
 
 # parse uri to dict
 def parse_uri(uri):
@@ -209,7 +209,11 @@ def app(env, start_response):
             # set gameid value to False
             gameid = False
 
-        except:
+        except Exception as parse_error:
+
+            # print gameid parse error
+            print('The following error occured while trying to parse the game id to int: \n > ' \
+                   + str(parse_error))
 
             # set content and http status
             status_code = '400 Bad Request'
