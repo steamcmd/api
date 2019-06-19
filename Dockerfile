@@ -14,9 +14,12 @@ ENV HOME /data
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
  && apt-get install -y --no-install-recommends lib32stdc++6 python3 python3-pip \
- && pip3 install --no-cache-dir setuptools gunicorn redis \
- && rm -rf /var/lib/apt/lists/* \
- && pip3 uninstall pip -y
+ && rm -rf /var/lib/apt/lists/*
+
+# Install Python requirements
+COPY requirements.txt /tmp/requirements.txt
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt \
+ && rm /tmp/requirements.txt
 
 # Create the application user
 RUN useradd -m -d $HOME $USER
@@ -25,7 +28,7 @@ RUN useradd -m -d $HOME $USER
 USER $USER
 WORKDIR $HOME
 
-# Copy configuration files
+# Copy application code
 COPY src/ $HOME/
 
 ##################### INSTALLATION END #####################

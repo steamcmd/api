@@ -3,12 +3,14 @@
 Main application and entrypoint.
 """
 
-# imports
-import cfg as config
+# imports modules
 from subprocess import check_output
 import json
 import vdf
 import redis
+
+# import custom
+import cfg as config
 
 # parse uri to dict
 def parse_uri(uri):
@@ -32,34 +34,30 @@ def query(qstring):
     # try parsing query string else fail
     try:
 
-        # create default parameter dict
-        pdict = {}
-
         # check for empty string of query items
         if not qstring:
             # return empty dict
             return {}
 
-        else:
-            # create default parameter dict
-            pdict = {}
+        # create default parameter dict
+        pdict = {}
 
-            # set list items in single dict
-            for param in qstring.split('&'):
+        # set list items in single dict
+        for param in qstring.split('&'):
 
-                # split key/value
-                param = param.split('=')
-                # check if both a key and value has been given
-                if len(param) == 2:
-                    # add key/value to dict
-                    pdict[param[0]] = param[1]
-                # check if only a has been given
-                elif len(param) == 1:
-                    # add key and default value to dict
-                    pdict[param[0]] = '1'
+            # split key/value
+            param = param.split('=')
+            # check if both a key and value has been given
+            if len(param) == 2:
+                # add key/value to dict
+                pdict[param[0]] = param[1]
+            # check if only a has been given
+            elif len(param) == 1:
+                # add key and default value to dict
+                pdict[param[0]] = '1'
 
-            # return newly created dict
-            return pdict
+        # return newly created dict
+        return pdict
 
     except IndexError as query_error:
 
@@ -81,7 +79,7 @@ def method_check(method):
     """
 
     # set list of allowed methods from config
-    allowed_methods = config.allowed_methods
+    allowed_methods = config.ALLOWED_METHODS
 
     # return true if allowed method
     if method in allowed_methods:
@@ -98,7 +96,7 @@ def version_check(version):
     """
 
     # list of allowed versions
-    allowed_versions = config.allowed_versions
+    allowed_versions = config.ALLOWED_VERSIONS
 
     # return true if allowed version
     if version in allowed_versions:
@@ -166,8 +164,8 @@ def app(env, start_response):
 
     # check if proper version and endpoint is given
     elif not len(parse_uri(env['PATH_INFO'])) >= 2 or \
-         not parse_uri(env['PATH_INFO'])[0] in config.allowed_versions or \
-         not parse_uri(env['PATH_INFO'])[1] in config.available_endpoints:
+         not parse_uri(env['PATH_INFO'])[0] in config.ALLOWED_VERSIONS or \
+         not parse_uri(env['PATH_INFO'])[1] in config.AVAILABLE_ENDPOINTS:
 
         # set content and http status
         status_code = '400 Bad Request'
@@ -275,7 +273,7 @@ def app(env, start_response):
     data = content.encode('UTF-8')
 
     # convert allowed methods list to string
-    allowed_methods = ' '.join(config.allowed_methods)
+    allowed_methods = ' '.join(config.ALLOWED_METHODS)
 
     # set list of headers
     headers = [

@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """
-SteamCMD API configuration.
+SteamCMD API global configuration.
 """
 
 # allowed HTTP methods
-allowed_methods = [
+ALLOWED_METHODS = [
     'GET',
     'HEAD',
     'OPTIONS'
 ]
 
 # allowed api version
-allowed_versions = [
+ALLOWED_VERSIONS = [
     'v1'
 ]
 
 # available endpoints
-available_endpoints = [
+AVAILABLE_ENDPOINTS = [
     'info'
 ]

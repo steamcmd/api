@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Parse Valve key/value format
-and return dictionary.
+Valve key/value manipulation functions.
 """
 
 # imports
@@ -10,6 +9,10 @@ import shlex
 
 # read vdf and return dict
 def read(data):
+    """
+    Parse Valve key/value format
+    and return dictionary.
+    """
 
     # default vars
     parent = []

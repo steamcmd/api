@@ -17,14 +17,6 @@ stages:
   - deploy
   - after
 
-# lint Python code
-python lint:
-  stage: validate
-  script:
-    - apk add gcc git musl-dev
-    - pip install pylint
-    - git ls-files --exclude='*.py' --ignored | xargs pylint --exit-zero
-
 # lint Dockerfiles
 docker lint:
   stage: validate
@@ -32,12 +24,22 @@ docker lint:
   script:
     - git ls-files --exclude='Dockerfile*' --ignored | xargs hadolint
 
+# lint Python code
+python lint:
+  stage: validate
+  script:
+    - apk add gcc git musl-dev
+    - pip install pylint
+    - pip install -r requirements.txt
+    - git ls-files --exclude='*.py' --ignored | xargs pylint --exit-zero
+
 # test Python code
 python test:
   stage: validate
   script:
     - apk add gcc git musl-dev
     - pip install pylint
+    - pip install -r requirements.txt
     - git ls-files --exclude='*.py' --ignored | xargs pylint --errors-only
 
 # deploy api to app engine
