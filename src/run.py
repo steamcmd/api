@@ -3,14 +3,20 @@
 Main application and entrypoint.
 """
 
-# imports modules
+# import modules
 from subprocess import check_output
 import json
 import redis
 
+# import sentry.io
+import sentry_sdk
+
 # import custom
 import cfg as config
 import vdf
+
+# init sentry
+sentry_sdk.init(config.SENTRY_SDK_URL)
 
 # parse uri to dict
 def parse_uri(uri):

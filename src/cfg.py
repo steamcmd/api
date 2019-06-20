@@ -19,3 +19,6 @@ ALLOWED_VERSIONS = [
 AVAILABLE_ENDPOINTS = [
     'info'
 ]
+
+# sentry.io configuration
+SENTRY_SDK_URL = 'https://c38d9620b2da45d086ac403a7e59946b@sentry.io/1486480'
