@@ -27,9 +27,13 @@ heroku container:release web --app steamcmd
 ### Management
 
 Management of the app is done mainly via the Heroku Dashboard. But some other services are used as well.
-Timber.io is used for logging and can be looked into by executing locally:
+Timber.io is used for general logging and can be looked into by executing locally:
 ```
 heroku addons:open timber-logging
+```
+Sentry.io is used for error logging / storing issues and can be looked into by executing locally:
+```
+heroku addons:open sentry
 ```
 
 ### Development
