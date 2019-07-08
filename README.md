@@ -1,4 +1,5 @@
-[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black")
+[![pipeline status](https://gitlab.com/jonakoudijs/steamcmd-api/badges/master/pipeline.svg)](https://gitlab.com/jonakoudijs/steamcmd-api/commits/master)
+[![code style black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black")
 
 # SteamCMD API
 
@@ -7,11 +8,12 @@ Simple SteamCMD API
 ### Container Image
 
 The API is run via a Docker image which contains both the `steamcmd` binary and the Python code which is wrapped around it.
-To build and run the container (locally) with Docker:
+You can build and run the container (locally) with Docker:
 ```
 docker build -t steamcmd-api:test .
 docker run -p 8080:8080 -d steamcmd-api:test -e "PORT=8080"
 ```
+However using Docker Compose is preferred. See the [Development](#development) section for information.
 
 ### Deploying
 
