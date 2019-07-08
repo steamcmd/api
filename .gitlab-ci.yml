@@ -34,7 +34,7 @@ python lint:
     - git ls-files --exclude='*.py' --ignored | xargs pylint --exit-zero
 
 # check code with Black
-python lint:
+check black:
   stage: validate
   script:
     - pip install black
