@@ -1,3 +1,5 @@
+[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black")
+
 # SteamCMD API
 
 Simple SteamCMD API
@@ -38,6 +40,15 @@ heroku addons:open sentry
 
 ### Development
 
+To keep it simple, [Black](https://github.com/python/black) is used for code style / formatting. Part of the pipeline
+will check if the code is properly formatted according to Black code style. You can install it locally via pip:
+```
+pip install black
+```
+And then simply run it agains the Python source code:
+```
+black src
+```
 The easiest way to spin up the development environment is using Docker compose. This will build the image locally,
 mount the correct directory (`src`) and set the required environment variables. Just execute compose up in the root:
 ```

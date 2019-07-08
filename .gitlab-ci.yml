@@ -33,6 +33,13 @@ python lint:
     - pip install -r requirements.txt
     - git ls-files --exclude='*.py' --ignored | xargs pylint --exit-zero
 
+# check code with Black
+python lint:
+  stage: validate
+  script:
+    - pip install black
+    - black src --check
+
 # test Python code
 python test:
   stage: validate
@@ -60,7 +67,7 @@ warmup api:
   stage: after
   script:
     - apk add curl
-    - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/1
-    - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/1
+    - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
+    - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
   only:
     - master

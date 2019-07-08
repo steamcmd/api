@@ -25,7 +25,7 @@ def parse_uri(uri):
     """
 
     # split uri in parts
-    uri_path = uri.split('/')
+    uri_path = uri.split("/")
 
     # remove empty objects and return dict
     return list(filter(None, uri_path))
@@ -49,10 +49,10 @@ def query(qstring):
         pdict = {}
 
         # set list items in single dict
-        for param in qstring.split('&'):
+        for param in qstring.split("&"):
 
             # split key/value
-            param = param.split('=')
+            param = param.split("=")
             # check if both a key and value has been given
             if len(param) == 2:
                 # add key/value to dict
@@ -60,7 +60,7 @@ def query(qstring):
             # check if only a has been given
             elif len(param) == 1:
                 # add key and default value to dict
-                pdict[param[0]] = '1'
+                pdict[param[0]] = "1"
 
         # return newly created dict
         return pdict
@@ -68,14 +68,17 @@ def query(qstring):
     except IndexError as query_error:
 
         # print query parse error and return empty dict
-        print('The following error occured while trying to parse the query string: \n > ' \
-               + str(query_error))
+        print(
+            "The following error occured while trying to parse the query string: \n > "
+            + str(query_error)
+        )
         return {}
 
     else:
 
         # return empty dict because something went wrong
         return {}
+
 
 # method check
 def method_check(method):
@@ -119,14 +122,21 @@ def steamcmd(gameid):
     """
 
     # define steamcmd command
-    cmd = ['steamcmd', '+login', 'anonymous',
-           '+app_info_update', '1',
-           '+app_info_print', gameid,
-           '+quit']
+    cmd = [
+        "steamcmd",
+        "+login",
+        "anonymous",
+        "+app_info_update",
+        "1",
+        "+app_info_print",
+        gameid,
+        "+quit",
+    ]
     # execute steamcmd and capture output
     out = check_output(cmd)
     # return decoded bytes to string output
-    return out.decode('UTF-8')
+    return out.decode("UTF-8")
+
 
 # strip steamcmd output
 def strip(output, gameid):
@@ -136,9 +146,9 @@ def strip(output, gameid):
     """
 
     # remove steamcmd info
-    output = output[output.find('"' + gameid + '"'):]
-    output = '}'.join(output.split('}')[:-1])
-    output += '}'
+    output = output[output.find('"' + gameid + '"') :]
+    output = "}".join(output.split("}")[:-1])
+    output += "}"
 
     # return stripped output
     return output
@@ -152,6 +162,7 @@ def response():
 
     return True
 
+
 # app definition
 def app(env, start_response):
     """
@@ -159,47 +170,49 @@ def app(env, start_response):
     """
 
     # check if request method is allowed method
-    if not method_check(env['REQUEST_METHOD']):
+    if not method_check(env["REQUEST_METHOD"]):
 
         # set content and http status
-        status_code = '405 Method Not Allowed'
+        status_code = "405 Method Not Allowed"
         content = {
-            'status' : 'error',
-            'data'   : 'This http method is not allowed. Please check the docs'
+            "status": "error",
+            "data": "This http method is not allowed. Please check the docs",
         }
 
     # check if proper version and endpoint is given
-    elif not len(parse_uri(env['PATH_INFO'])) >= 2 or \
-         not parse_uri(env['PATH_INFO'])[0] in config.ALLOWED_VERSIONS or \
-         not parse_uri(env['PATH_INFO'])[1] in config.AVAILABLE_ENDPOINTS:
+    elif (
+        not len(parse_uri(env["PATH_INFO"])) >= 2
+        or not parse_uri(env["PATH_INFO"])[0] in config.ALLOWED_VERSIONS
+        or not parse_uri(env["PATH_INFO"])[1] in config.AVAILABLE_ENDPOINTS
+    ):
 
         # set content and http status
-        status_code = '400 Bad Request'
+        status_code = "400 Bad Request"
         content = {
-            'status' : 'error',
-            'data'   : 'Incorrect version and/or endpoint used. Please check the docs'
+            "status": "error",
+            "data": "Incorrect version and/or endpoint used. Please check the docs",
         }
 
     # execute when 'info' endpoint is used
-    elif parse_uri(env['PATH_INFO'])[1] == 'info':
+    elif parse_uri(env["PATH_INFO"])[1] == "info":
 
-        #numb = parse_uri(env['PATH_INFO'])[2]
-        #print(float(numb).is_integer())
+        # numb = parse_uri(env['PATH_INFO'])[2]
+        # print(float(numb).is_integer())
 
         # try converting given app id to int
         try:
             # set gameid variable
-            gameid = parse_uri(env['PATH_INFO'])[2]
+            gameid = parse_uri(env["PATH_INFO"])[2]
             # check if gameid is integer
             float(gameid).is_integer()
 
         except IndexError:
 
             # set content and http status
-            status_code = '400 Bad Request'
+            status_code = "400 Bad Request"
             content = {
-                'status' : 'error',
-                'data'   : 'No app id has been given. Please add it to the url after /info/'
+                "status": "error",
+                "data": "No app id has been given. Please add it to the url after /info/",
             }
             # set gameid value to False
             gameid = False
@@ -207,10 +220,10 @@ def app(env, start_response):
         except TypeError:
 
             # set content and http status
-            status_code = '400 Bad Request'
+            status_code = "400 Bad Request"
             content = {
-                'status' : 'error',
-                'data'   : 'An invalid app id has been given. Please check the value or the docs'
+                "status": "error",
+                "data": "An invalid app id has been given. Please check the value or the docs",
             }
             # set gameid value to False
             gameid = False
@@ -218,14 +231,16 @@ def app(env, start_response):
         except Exception as parse_error:
 
             # print gameid parse error
-            print('The following error occured while trying to parse the game id to int: \n > ' \
-                   + str(parse_error))
+            print(
+                "The following error occured while trying to parse the game id to int: \n > "
+                + str(parse_error)
+            )
 
             # set content and http status
-            status_code = '400 Bad Request'
+            status_code = "400 Bad Request"
             content = {
-                'status' : 'error',
-                'data'   : 'An unknown error occured when parsing the app id. Please try again'
+                "status": "error",
+                "data": "An unknown error occured when parsing the app id. Please try again",
             }
             # set gameid value to False
             gameid = False
@@ -237,17 +252,17 @@ def app(env, start_response):
             output = steamcmd(gameid)
 
             # set and check for not found error
-            error_search = 'No app info for AppID ' + gameid + ' found'
+            error_search = "No app info for AppID " + gameid + " found"
 
             # set 404 error if error appeared in output
             if error_search in output:
 
                 # set content and http status
-                status_code = '404 Not Found'
+                status_code = "404 Not Found"
                 content = {
-                    'status' : 'error',
-                    'data'   : 'No information for this specific app id ' \
-                                    'could be found on Steam'
+                    "status": "error",
+                    "data": "No information for this specific app id "
+                    "could be found on Steam",
                 }
 
             # parse steamcmd output to json
@@ -260,17 +275,14 @@ def app(env, start_response):
                 data = vdf.read(data)
 
                 # set content and http status
-                status_code = '200 OK'
-                content = {
-                    'status' : 'success',
-                    'data'   : data
-                }
+                status_code = "200 OK"
+                content = {"status": "success", "data": data}
 
     # parse query parameters
-    parameters = query(env['QUERY_STRING'])
+    parameters = query(env["QUERY_STRING"])
 
     # check if pretty print enabled
-    if 'pretty' in parameters and parameters['pretty'] == '1':
+    if "pretty" in parameters and parameters["pretty"] == "1":
 
         # decode to json and pretty print
         content = json.dumps(content, indent=4, sort_keys=True)
@@ -280,20 +292,20 @@ def app(env, start_response):
         content = json.dumps(content)
 
     # decode to bytes
-    data = content.encode('UTF-8')
+    data = content.encode("UTF-8")
 
     # convert allowed methods list to string
-    allowed_methods = ' '.join(config.ALLOWED_METHODS)
+    allowed_methods = " ".join(config.ALLOWED_METHODS)
 
     # set list of headers
     headers = [
-        ('Access-Control-Allow-Methods', allowed_methods),
-        ('Content-Type', 'application/json'),
-        ('Content-Length', str(len(data)))
+        ("Access-Control-Allow-Methods", allowed_methods),
+        ("Content-Type", "application/json"),
+        ("Content-Length", str(len(data))),
     ]
 
     # construct http response
     start_response(status_code, headers)
 
     # return json response
-    return([data])
+    return [data]

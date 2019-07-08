@@ -4,21 +4,13 @@ SteamCMD API global configuration.
 """
 
 # allowed HTTP methods
-ALLOWED_METHODS = [
-    'GET',
-    'HEAD',
-    'OPTIONS'
-]
+ALLOWED_METHODS = ["GET", "HEAD", "OPTIONS"]
 
 # allowed api version
-ALLOWED_VERSIONS = [
-    'v1'
-]
+ALLOWED_VERSIONS = ["v1"]
 
 # available endpoints
-AVAILABLE_ENDPOINTS = [
-    'info'
-]
+AVAILABLE_ENDPOINTS = ["info"]
 
 # sentry.io configuration
-SENTRY_SDK_URL = 'https://c38d9620b2da45d086ac403a7e59946b@sentry.io/1486480'
+SENTRY_SDK_URL = "https://c38d9620b2da45d086ac403a7e59946b@sentry.io/1486480"
