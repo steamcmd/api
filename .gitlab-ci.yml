@@ -54,7 +54,7 @@ deploy app:
   stage: deploy
   image: docker:stable
   script:
-    - echo $CI_COMMIT_TAG > src/.version
+    #- echo $CI_COMMIT_TAG > src/.version
     - apk add bash curl nodejs
     - curl https://cli-assets.heroku.com/install.sh | sh
     - heroku container:login
