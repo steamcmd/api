@@ -61,7 +61,7 @@ deploy app:
     - echo $CI_COMMIT_TAG > src/.version
     - apk add bash curl nodejs
     - curl https://cli-assets.heroku.com/install.sh | sh
-    - heroku container:login
+    - HEROKU_DEBUG=1 heroku container:login
     #- heroku container:push web --app steamcmd
     #- heroku container:release web --app steamcmd
   only:
