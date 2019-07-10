@@ -17,7 +17,7 @@ import vdf
 # determine if sentry should be enabled
 try:
     # set status to env variable
-    sentry_enable = os.environ['SENTRY']
+    sentry_enable = os.environ["SENTRY"]
     sentry_enable = int(sentry_enable)
     # check for correct value
     if not sentry_enable in [0, 1]:
@@ -38,6 +38,7 @@ except KeyError:
 if sentry_enable:
     # import and init sentry
     import sentry_sdk
+
     sentry_sdk.init(config.SENTRY_SDK_URL)
 
 
@@ -341,7 +342,6 @@ def app(env, start_response):
                 "status": "error",
                 "data": "Something went wrong while retrieving and parsing the current API version. Please try again later",
             }
-
 
     # parse query parameters
     parameters = query(env["QUERY_STRING"])
