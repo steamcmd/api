@@ -61,7 +61,6 @@ deploy app:
     - heroku container:push web --app steamcmd
     - heroku container:release web --app steamcmd
   only:
-    - master
     - tags
 
 # download latest SteamCMD
@@ -72,5 +71,4 @@ warmup api:
     - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
     - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
   only:
-    - master
     - tags
