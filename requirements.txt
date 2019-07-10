@@ -1,4 +1,5 @@
 setuptools
 gunicorn
 redis
-sentry-sdk == 0.9.5
+semver
+sentry-sdk

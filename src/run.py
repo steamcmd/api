@@ -5,18 +5,41 @@ Main application and entrypoint.
 
 # import modules
 from subprocess import check_output
+import semver
 import json
 import redis
-
-# import sentry.io
-import sentry_sdk
+import os
 
 # import custom
 import cfg as config
 import vdf
 
-# init sentry
-sentry_sdk.init(config.SENTRY_SDK_URL)
+# determine if sentry should be enabled
+try:
+    # set status to env variable
+    sentry_enable = os.environ['SENTRY']
+    sentry_enable = int(sentry_enable)
+    # check for correct value
+    if not sentry_enable in [0, 1]:
+        # raise exception
+        raise ValueError("Incorrect value, not one of the required options!")
+
+except ValueError:
+    # print error with converting to int
+    print("Incorrect 'SENTRY' option set! Default hardcoded value used")
+    # enable sentry by default
+    sentry_enable = 1
+
+except KeyError:
+    # enable sentry by default
+    sentry_enable = 1
+
+# check if sentry is enabled
+if sentry_enable:
+    # import and init sentry
+    import sentry_sdk
+    sentry_sdk.init(config.SENTRY_SDK_URL)
+
 
 # parse uri to dict
 def parse_uri(uri):
@@ -154,13 +177,37 @@ def strip(output, gameid):
     return output
 
 
-# construct response
-def response():
+# check current version
+def parse_version():
     """
-    Construct HTTP response
+    Read and return current application version.
     """
 
-    return True
+    # read version file or set default
+    try:
+        # open and read version file
+        version_file = open(config.VERSION_FILE, "r")
+        version = version_file.read()
+
+        # strip whitespace and newlines
+        version = version.rstrip()
+        # parse through semver and return version
+        return semver.parse(version)
+
+    except FileNotFoundError:
+        # print error
+        print("Version file ('" + config.VERSION_FILE + "') not found!")
+        # return default False when error
+        return False
+
+    except ValueError as parse_error:
+        # print error
+        print(
+            "Incorrect version used. Use the semver syntax. Received following error: \n > "
+            + str(parse_error)
+        )
+        # return default False when error
+        return False
 
 
 # app definition
@@ -195,9 +242,6 @@ def app(env, start_response):
 
     # execute when 'info' endpoint is used
     elif parse_uri(env["PATH_INFO"])[1] == "info":
-
-        # numb = parse_uri(env['PATH_INFO'])[2]
-        # print(float(numb).is_integer())
 
         # try converting given app id to int
         try:
@@ -277,6 +321,27 @@ def app(env, start_response):
                 # set content and http status
                 status_code = "200 OK"
                 content = {"status": "success", "data": data}
+
+    elif parse_uri(env["PATH_INFO"])[1] == "version":
+
+        # read and parse version from file
+        version_semver = parse_version()
+
+        # check if version succesfully read and parsed
+        if version_semver:
+
+            # set content and http status
+            status_code = "200 OK"
+            content = {"status": "success", "data": version_semver}
+        else:
+
+            # set content and http status
+            status_code = "500 Internal Server Error"
+            content = {
+                "status": "error",
+                "data": "Something went wrong while retrieving and parsing the current API version. Please try again later",
+            }
+
 
     # parse query parameters
     parameters = query(env["QUERY_STRING"])
