@@ -23,6 +23,7 @@ docker lint:
   image: jonakoudijs/hadolint:latest
   script:
     - git ls-files --exclude='Dockerfile*' --ignored | xargs hadolint
+  when: manual
 
 # lint Python code
 python lint:
@@ -32,6 +33,7 @@ python lint:
     - pip install pylint
     - pip install -r requirements.txt
     - git ls-files --exclude='*.py' --ignored | xargs pylint --exit-zero
+  when: manual
 
 # check code with Black
 check black:
@@ -39,6 +41,7 @@ check black:
   script:
     - pip install black
     - black src --check
+  when: manual
 
 # test Python code
 python test:
@@ -48,6 +51,7 @@ python test:
     - pip install pylint
     - pip install -r requirements.txt
     - git ls-files --exclude='*.py' --ignored | xargs pylint --errors-only
+  when: manual
 
 # deploy api to app engine
 deploy app:
@@ -58,8 +62,8 @@ deploy app:
     - apk add bash curl nodejs
     - curl https://cli-assets.heroku.com/install.sh | sh
     - heroku container:login
-    - heroku container:push web --app steamcmd
-    - heroku container:release web --app steamcmd
+    #- heroku container:push web --app steamcmd
+    #- heroku container:release web --app steamcmd
   only:
     - master
 
@@ -72,3 +76,4 @@ warmup api:
     - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
   only:
     - master
+  when: manual
