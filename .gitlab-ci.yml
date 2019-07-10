@@ -54,14 +54,14 @@ deploy app:
   stage: deploy
   image: docker:stable
   script:
-    #- echo $CI_COMMIT_TAG > src/.version
+    - echo $CI_COMMIT_TAG > src/.version
     - apk add bash curl nodejs
     - curl https://cli-assets.heroku.com/install.sh | sh
     - heroku container:login
     - heroku container:push web --app steamcmd
     - heroku container:release web --app steamcmd
   only:
-    - tags
+    - master
 
 # download latest SteamCMD
 warmup api:
@@ -71,4 +71,4 @@ warmup api:
     - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
     - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
   only:
-    - tags
+    - master
