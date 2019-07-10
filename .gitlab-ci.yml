@@ -65,7 +65,7 @@ deploy app:
     #- heroku container:push web --app steamcmd
     #- heroku container:release web --app steamcmd
   only:
-    - master
+    - tags
 
 # download latest SteamCMD
 warmup api:
