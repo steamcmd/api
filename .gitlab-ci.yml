@@ -53,11 +53,18 @@ python test:
     - git ls-files --exclude='*.py' --ignored | xargs pylint --errors-only
   when: manual
 
+test env:
+  stage: deploy
+  script:
+    - echo $HEROKU_API_KEY
+
 # deploy api to app engine
 deploy app:
   stage: deploy
   image: docker:stable
   script:
+    - echo $HEROKU_API_KEY
+    - echo $CI_COMMIT_TAG
     - echo $CI_COMMIT_TAG > src/.version
     - apk add bash curl nodejs
     - curl https://cli-assets.heroku.com/install.sh | sh
