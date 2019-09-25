@@ -1,0 +1,22 @@
+[project]
+name = "SteamCMD API"
+version = "1.1.0"
+description = "Read-only API interface for steamcmd app_info."
+authors = [
+    "Jona Koudijs <jona@koudijs.me>"
+]
+license = "MIT"
+readme = "README.md"
+python = "^3.6"
+homepage = "https://www.steamcmd.net"
+repository = "https://github.com/steamcmd/api"
+documentation = "https://www.steamcmd.net/#docs"
+
+keywords = ["steamcmd", "api", "steam", "version", "games"]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Games/Entertainment",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    "Topic :: Software Development"
+]
