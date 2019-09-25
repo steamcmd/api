@@ -364,6 +364,7 @@ def app(env, start_response):
 
     # set list of headers
     headers = [
+        ("Access-Control-Allow-Origin", "*"),
         ("Access-Control-Allow-Methods", allowed_methods),
         ("Content-Type", "application/json"),
         ("Content-Length", str(len(data))),
