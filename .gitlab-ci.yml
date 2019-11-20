@@ -2,7 +2,7 @@
 # Gitlab CI file
 
 # docker image
-image: python:3-alpine
+image: python:3
 
 # define DIND vars
 variables:
@@ -28,7 +28,6 @@ docker lint:
 python lint:
   stage: validate
   script:
-    - apk add gcc git musl-dev
     - pip install pylint
     - pip install -r requirements.txt
     - git ls-files --exclude='*.py' --ignored | xargs pylint --exit-zero
@@ -44,7 +43,6 @@ check black:
 python test:
   stage: validate
   script:
-    - apk add gcc git musl-dev
     - pip install pylint
     - pip install -r requirements.txt
     - git ls-files --exclude='*.py' --ignored | xargs pylint --errors-only
@@ -67,7 +65,6 @@ deploy app:
 warmup api:
   stage: after
   script:
-    - apk add curl
     - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
     - curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
   only:
