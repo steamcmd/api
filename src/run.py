@@ -147,14 +147,11 @@ def clean_appcache():
     """
 
     # set directory variables
-    homedir  = os.getenv("HOME")
+    homedir = os.getenv("HOME")
     cachedir = homedir + "/.steam/appcache/"
 
     # list of cache files
-    cache_files = [
-        cachedir + "appinfo.vdf",
-        cachedir + "appinfo2.vdf"
-    ]
+    cache_files = [cachedir + "appinfo.vdf"]
 
     # remove cache files
     for cfile in cache_files:
