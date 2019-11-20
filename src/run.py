@@ -139,11 +139,41 @@ def version_check(version):
     return False
 
 
+# clean steam cache
+def clean_appcache():
+    """
+    Clean local Steam appcache to avoid
+    unexpected old info from Steam cache
+    """
+
+    # set directory variables
+    homedir  = os.getenv("HOME")
+    cachedir = homedir + "/.steam/appcache/"
+
+    # list of cache files
+    cache_files = [
+        cachedir + "appinfo.vdf",
+        cachedir + "appinfo2.vdf"
+    ]
+
+    # remove cache files
+    for cfile in cache_files:
+
+        # check if file exists
+        if os.path.isfile(cfile):
+
+            # remove cache file
+            os.remove(cfile)
+
+
 # execute steamcmd
 def steamcmd(gameid):
     """
     Execute steamcmd and return all output.
     """
+
+    # cleanup cache files
+    clean_appcache()
 
     # define steamcmd command
     cmd = [
