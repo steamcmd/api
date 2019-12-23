@@ -1,5 +1,6 @@
 [![pipeline status](https://gitlab.com/jonakoudijs/steamcmd-api/badges/master/pipeline.svg)](https://gitlab.com/jonakoudijs/steamcmd-api/commits/master)
-[![code style black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black")
+[![code style black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
+[![service status](https://img.shields.io/static/v1?label=service&message=status&color=blue)](https://status.steamcmd.net)
 
 # SteamCMD API
 
