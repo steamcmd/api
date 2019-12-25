@@ -143,7 +143,7 @@ def version_check(version):
 def clean_appcache():
     """
     Clean local Steam appcache to avoid
-    unexpected old info from Steam cache
+    unexpected old info from Steam cache.
     """
 
     # set directory variables
