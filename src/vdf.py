@@ -16,7 +16,7 @@ def surround_quotes(obj):
     """
 
     # add double quotes around string
-    obj = "\"" + obj + "\""
+    obj = '"' + obj + '"'
 
     # return quoted string
     return obj
