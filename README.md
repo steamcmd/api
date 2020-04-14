@@ -43,6 +43,13 @@ heroku addons:open sentry
 
 ### Development
 
+The easiest way to spin up the development environment is using Docker compose. This will build the image locally,
+mount the correct directory (`src`) and set the required environment variables. Just execute compose up in the root:
+```
+docker-compose up
+```
+Now you can reach the SteamCMD API locally on [http://localhost:8080](http://localhost:8080)
+
 To keep it simple, [Black](https://github.com/python/black) is used for code style / formatting. Part of the pipeline
 will check if the code is properly formatted according to Black code style. You can install it locally via pip:
 ```
@@ -52,9 +59,3 @@ And then simply run it agains the Python source code:
 ```
 black src
 ```
-The easiest way to spin up the development environment is using Docker compose. This will build the image locally,
-mount the correct directory (`src`) and set the required environment variables. Just execute compose up in the root:
-```
-docker-compose up
-```
-Now you can reach the SteamCMD API locally on [http://localhost:8080](http://localhost:8080)

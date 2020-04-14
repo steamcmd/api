@@ -1,5 +1,5 @@
 # Set the base image steamcmd
-FROM jonakoudijs/steamcmd:latest
+FROM steamcmd/steamcmd:latest
 
 # File Author / Maintainer
 LABEL maintainer="Jona Koudijs"
@@ -34,4 +34,4 @@ COPY src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
-CMD [ "sh", "-c", "gunicorn --workers 1 --threads 8 --timeout 120 --bind :$PORT run:app" ]
+CMD ["sh", "-c", "gunicorn --workers 1 --threads 8 --timeout 120 --bind :$PORT run:app"]
