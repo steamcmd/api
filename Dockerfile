@@ -35,4 +35,4 @@ COPY src/ $HOME/
 
 # Set default container command
 ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["gunicorn --workers 1 --threads 8 --timeout 120 --bind :$PORT run:app"]
+CMD ["/usr/local/bin/gunicorn --workers 1 --threads 8 --timeout 120 --bind :$PORT run:app"]
