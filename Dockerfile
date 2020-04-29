@@ -1,9 +1,6 @@
 # Set the base image steamcmd
 FROM steamcmd/steamcmd:latest
 
-# File Author / Maintainer
-LABEL maintainer="Jona Koudijs"
-
 # Set environment variables
 ENV USER steamcmd
 ENV HOME /data
@@ -34,5 +31,5 @@ COPY src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
-ENTRYPOINT ["/bin/sh", "-c"]
-CMD ["/usr/local/bin/gunicorn --workers 1 --threads 8 --timeout 120 --bind :$PORT run:app"]
+ENTRYPOINT [""]
+CMD gunicorn --workers 1 --threads 8 --timeout 120 --bind :$PORT run:app
