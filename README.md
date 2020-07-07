@@ -1,4 +1,4 @@
-[![pipeline status](https://gitlab.com/jonakoudijs/steamcmd-api/badges/master/pipeline.svg)](https://gitlab.com/jonakoudijs/steamcmd-api/commits/master)
+[![CodeFactor](https://www.codefactor.io/repository/github/lanlords/api/badge)](https://www.codefactor.io/repository/github/lanlords/api)
 [![code style black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![service status](https://img.shields.io/static/v1?label=service&message=status&color=blue)](https://status.steamcmd.net)
 
@@ -14,7 +14,7 @@ You can build and run the container (locally) with Docker:
 docker build -t steamcmd-api:test .
 docker run -p 8080:8080 -d steamcmd-api:test -e "PORT=8080"
 ```
-However using Docker Compose is preferred. See the [Development](#development) section for information.
+However, using Docker Compose is preferred. See the [Development](#development) section for information.
 
 ### Deploying
 
@@ -27,18 +27,6 @@ And use the following deployment commands:
 ```
 heroku container:push web --app steamcmd
 heroku container:release web --app steamcmd
-```
-
-### Management
-
-Management of the app is done mainly via the Heroku Dashboard. But some other services are used as well.
-Timber.io is used for general logging and can be looked into by executing locally:
-```
-heroku addons:open timber-logging
-```
-Sentry.io is used for error logging / storing issues and can be looked into by executing locally:
-```
-heroku addons:open sentry
 ```
 
 ### Development
