@@ -5,6 +5,10 @@ FROM steamcmd/steamcmd:ubuntu-18
 ENV USER steamcmd
 ENV HOME /data
 
+ENV PORT 8080
+ENV WORKERS 1
+ENV THREADS 8
+
 ################## BEGIN INSTALLATION ######################
 
 # Update the repository and install prerequisites
@@ -32,4 +36,4 @@ COPY src/ $HOME/
 
 # Set default container command
 ENTRYPOINT [""]
-CMD gunicorn --workers 1 --threads 8 --timeout 120 --bind :$PORT run:app
+CMD gunicorn --workers $WORKERS --threads $THREADS --timeout 120 --bind :$PORT run:app

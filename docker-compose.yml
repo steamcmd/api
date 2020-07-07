@@ -8,7 +8,8 @@ services:
       - ./src:/data
     environment:
       PORT: 8080
-      SENTRY: 0
+      WORKERS: 4
+      THREADS: 1
       REDIS_URL: redis://redis:6379
       GUNICORN_CMD_ARGS: "--reload"
       PYTHONUNBUFFERED: "TRUE"

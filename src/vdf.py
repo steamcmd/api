@@ -55,6 +55,9 @@ def read_json_method(data):
     # init json and add opening bracket
     vjson = "{"
 
+    # replace tabs with spaces
+    data.replace("\t", "  ")
+
     # split into lines
     data = data.splitlines()
 
@@ -124,8 +127,18 @@ def read_json_method(data):
     # parse json to dict
     try:
         vdict = json.loads(vjson)
-    except:
+
+    except Exception as parse_error:
+        # print json parse error and set dict to false
+        print(
+            "The following error occured while trying to parse the VDF app" +
+            "info returned from steamcmd: the query string: \n > "
+            + str(parse_error)
+        )
         vdict = False
+
+        # set error exit code
+        sys.exit(1)
 
     return vdict
 

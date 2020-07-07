@@ -2,4 +2,3 @@ setuptools
 gunicorn
 redis
 semver
-sentry-sdk

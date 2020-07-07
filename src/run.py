@@ -14,34 +14,6 @@ import os
 import cfg as config
 import vdf
 
-# determine if sentry should be enabled
-try:
-    # set status to env variable
-    sentry_enable = os.environ["SENTRY"]
-    sentry_enable = int(sentry_enable)
-    # check for correct value
-    if not sentry_enable in [0, 1]:
-        # raise exception
-        raise ValueError("Incorrect value, not one of the required options!")
-
-except ValueError:
-    # print error with converting to int
-    print("Incorrect 'SENTRY' option set! Default hardcoded value used")
-    # enable sentry by default
-    sentry_enable = 1
-
-except KeyError:
-    # enable sentry by default
-    sentry_enable = 1
-
-# check if sentry is enabled
-if sentry_enable:
-    # import and init sentry
-    import sentry_sdk
-
-    sentry_sdk.init(config.SENTRY_SDK_URL)
-
-
 # parse uri to dict
 def parse_uri(uri):
     """
@@ -53,7 +25,6 @@ def parse_uri(uri):
 
     # remove empty objects and return dict
     return list(filter(None, uri_path))
-
 
 # parse query string
 def query(qstring):
@@ -346,9 +317,20 @@ def app(env, start_response):
                 # parse vdf data
                 data = vdf.read(data)
 
-                # set content and http status
-                status_code = "200 OK"
-                content = {"status": "success", "data": data}
+                # return status based on parse succces
+                if data:
+
+                    # set content and http status
+                    status_code = "200 OK"
+                    content = {"status": "success", "data": data}
+                else:
+
+                    # set content and http status
+                    status_code = "500 Internal Server Error"
+                    content = {
+                        "status": "error",
+                        "data": "Something went wrong while parsing the app info from Steam. Please try again later",
+                    }
 
     elif parse_uri(env["PATH_INFO"])[1] == "version":
 
