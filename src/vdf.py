@@ -131,8 +131,8 @@ def read_json_method(data):
     except Exception as parse_error:
         # print json parse error and set dict to false
         print(
-            "The following error occured while trying to parse the VDF app" +
-            "info returned from steamcmd: the query string: \n > "
+            "The following error occured while trying to parse the VDF app"
+            + "info returned from steamcmd: the query string: \n > "
             + str(parse_error)
         )
         vdict = False

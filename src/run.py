@@ -26,6 +26,7 @@ def parse_uri(uri):
     # remove empty objects and return dict
     return list(filter(None, uri_path))
 
+
 # parse query string
 def query(qstring):
     """
