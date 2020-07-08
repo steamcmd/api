@@ -5,7 +5,7 @@
 
 # SteamCMD API
 
-Simple SteamCMD API
+SteamCMD API back-end source
 
 ### Container Image
 
