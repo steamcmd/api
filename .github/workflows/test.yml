@@ -1,0 +1,39 @@
+---
+name: Test
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test-docker-image:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: e1himself/goss-installation-action@v1
+      - name: Docker Login
+        run: echo ${{ secrets.DOCKER_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Build Image
+        run: docker build -t steamcmd/api:latest .
+      - name: Test Image
+        run: dgoss run steamcmd/api:latest
+
+  python-lint:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - uses: ricardochaves/python-lint@v1.1.0
+        with:
+          # python files
+          python-root-list: "src"
+          # enabled linters
+          use-black: true
+          # disabled linters
+          use-pylint: false
+          use-pycodestyle: false
+          use-flake8: false
+          use-mypy: false
+          use-isort: false

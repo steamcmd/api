@@ -5,35 +5,40 @@
 
 # SteamCMD API
 
-SteamCMD API back-end source
+Read-only API interface for steamcmd app_info
 
 ### Container Image
 
-The API is run via a Docker image which contains both the `steamcmd` binary and the Python code which is wrapped around it.
-You can build and run the container (locally) with Docker:
+The API is run via a Docker image which contains both the `steamcmd` binary and
+the Python code which is wrapped around it. You can build and run the container
+(locally) with Docker:
 ```
 docker build -t steamcmd-api:test .
-docker run -p 8080:8080 -d steamcmd-api:test -e "PORT=8080"
+docker run -p 8080:8080 -d steamcmd-api:test
 ```
-However, using Docker Compose is preferred. See the [Development](#development) section for information.
+However during development, using Docker Compose is preferred.
+See the [Development](#development) section for information.
 
 ### Deploying
 
-The SteamCMD API is automatically deployed on Heroku when commits are done to/merged into master. This is done via the Gitlab pipeline.
+Newer versions of the API are automatically deployed on Heroku when a new version
+has been created on Github. Deployment is done via [Github Actions](https://github.com/steamcmd/api/actions)
+
 If you want or need to deploy manually you will have to authenticate locally:
 ```
 heroku container:login
 ```
 And use the following deployment commands:
 ```
-heroku container:push web --app steamcmd
-heroku container:release web --app steamcmd
+heroku container:push web --app yourappname
+heroku container:release web --app yourappname
 ```
 
 ### Development
 
-The easiest way to spin up the development environment is using Docker compose. This will build the image locally,
-mount the correct directory (`src`) and set the required environment variables. Just execute compose up in the root:
+The easiest way to spin up the development environment is using Docker compose.
+This will build the image locally, mount the correct directory (`src`) and set
+the required environment variables. Just execute compose up in the root:
 ```
 docker-compose up
 ```

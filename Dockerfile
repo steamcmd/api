@@ -8,6 +8,7 @@ ENV HOME /data
 ENV PORT 8080
 ENV WORKERS 1
 ENV THREADS 8
+ENV TIMEOUT 120
 
 ################## BEGIN INSTALLATION ######################
 
@@ -36,4 +37,4 @@ COPY src/ $HOME/
 
 # Set default container command
 ENTRYPOINT [""]
-CMD gunicorn --workers $WORKERS --threads $THREADS --timeout 120 --bind :$PORT run:app
+CMD gunicorn --workers $WORKERS --threads $THREADS --timeout $TIMEOUT --bind :$PORT run:app
