@@ -30,9 +30,9 @@ jobs:
           # python files
           python-root-list: "src"
           # enabled linters
-          use-pylint: true
           use-black: true
           # disabled linters
+          use-pylint: false
           use-pycodestyle: false
           use-flake8: false
           use-mypy: false
