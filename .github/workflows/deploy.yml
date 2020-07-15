@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: e1himself/goss-installation-action@v1
       - name: Parse API Version
-        run: echo "::set-env name=API_VERSION::$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 1-)"
+        run: echo "::set-env name=API_VERSION::$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)"
       - name: Docker Login
         run: echo ${{ secrets.DOCKER_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
       - name: Build Image
@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Parse API Version
-        run: echo "::set-env name=API_VERSION::$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 1-)"
+        run: echo "::set-env name=API_VERSION::$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)"
       - name: Store API Version
         run: echo $API_VERSION > src/.version
       - uses: akhileshns/heroku-deploy@v3.2.6
