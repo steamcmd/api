@@ -9,19 +9,19 @@ on:
       - master
 
 jobs:
-  test-docker-image:
+  test-image:
+    name: Test Image
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - uses: e1himself/goss-installation-action@v1
-      - name: Docker Login
-        run: echo ${{ secrets.DOCKER_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
       - name: Build Image
         run: docker build -t steamcmd/api:latest .
       - name: Test Image
         run: dgoss run steamcmd/api:latest
 
   python-lint:
+    name: Python Lint
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v1
