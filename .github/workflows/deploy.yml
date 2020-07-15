@@ -36,6 +36,18 @@ jobs:
       - name: Push Image
         run: docker push steamcmd/api
 
+  update-readme:
+    name: Update Readme
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Update Docker Hub Description
+        uses: peter-evans/dockerhub-description@v2
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKERHUB_REPOSITORY: steamcmd/api
+
   deploy-heroku:
     name: Deploy Heroku
     runs-on: ubuntu-18.04
