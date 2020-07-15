@@ -34,7 +34,7 @@ jobs:
       - name: Tag Image
         run: docker tag steamcmd/api:latest steamcmd/api:$API_VERSION
       - name: Push Image
-        run: do docker push steamcmd/api
+        run: docker push steamcmd/api
 
   deploy-heroku:
     name: Deploy Heroku
@@ -57,9 +57,9 @@ jobs:
   warmup-api:
     name: Warmup API
     runs-on: ubuntu-18.04
-    needs: check-requirements
+    needs: deploy-heroku
     steps:
       - name: Call API Cold
-        run: curl --connect-timeout 2 --max-time 2 https://api.steamcmd.net/v1/info/1 || true
+        run: curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1 || true
       - name: Call API Warm
-        run: curl --connect-timeout 2 --max-time 2 https://api.steamcmd.net/v1/info/1
+        run: curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
