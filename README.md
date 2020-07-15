@@ -1,7 +1,8 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/steamcmd/api/badge)](https://www.codefactor.io/repository/github/steamcmd/api)
-[![code style black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
-[![service status](https://img.shields.io/static/v1?label=service&message=status&color=blue)](https://status.steamcmd.net)
+[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
+[![service Status](https://img.shields.io/static/v1?label=service&message=status&color=blue)](https://status.steamcmd.net)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/steamcmd/api?label=version)](https://github.com/steamcmd/api/releases)
 
 # SteamCMD API
 
