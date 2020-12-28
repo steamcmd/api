@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
-      - uses: e1himself/goss-installation-action
+      - uses: e1himself/goss-installation-action@v1.0.3
         with:
           version: 'v0.3.14'
       - name: Build Image
