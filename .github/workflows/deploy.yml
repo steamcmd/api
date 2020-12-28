@@ -10,8 +10,8 @@ jobs:
     name: Check Requirements
     runs-on: ubuntu-18.04
     steps:
-      - name: Get Version Tag
-        run: echo "::set-env name=API_TAG::$(echo $GITHUB_REF | awk -F '/' '{print $NF}')"
+      - name: Set Version Tag
+        run: echo "API_TAG=$(echo $GITHUB_REF | awk -F '/' '{print $NF}')" >> $GITHUB_ENV
       - name: Check Tag Convention
         run: '[[ "${API_TAG:0:1}" == "v" ]] || exit 1'
 
@@ -25,7 +25,7 @@ jobs:
         with:
           version: 'v0.3.14'
       - name: Parse API Version
-        run: echo "::set-env name=API_VERSION::$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)"
+        run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
       - name: Docker Login
         run: echo ${{ secrets.DOCKER_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
       - name: Build Image
@@ -57,7 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Parse API Version
-        run: echo "::set-env name=API_VERSION::$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)"
+        run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
       - name: Store API Version
         run: echo $API_VERSION > src/.version
       - uses: akhileshns/heroku-deploy@v3.2.6
