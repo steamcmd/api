@@ -14,10 +14,13 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
+      - uses: e1himself/goss-installation-action
+        with:
+          version: 'v0.3.14'
       - name: Build Image
         run: docker build -t steamcmd/api:latest .
       - name: Test Image
-        run: docker run steamcmd/api:latest +quit
+        run: dgoss run steamcmd/api:latest
 
   python-lint:
     name: Python Lint
