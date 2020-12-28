@@ -18,7 +18,7 @@ jobs:
       - name: Build Image
         run: docker build -t steamcmd/api:latest .
       - name: Test Image
-        run: dgoss run steamcmd/api:latest
+        run: docker run steamcmd/api:latest +quit
 
   python-lint:
     name: Python Lint
