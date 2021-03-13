@@ -8,6 +8,7 @@ from subprocess import check_output
 import semver
 import json
 import redis
+from urllib.parse import urlparse
 import os
 
 # import custom
@@ -210,11 +211,185 @@ def parse_version():
         return False
 
 
+# construct redis config
+def redis_config():
+    """
+    Read and set Redis configuration
+    from enviroment variables.
+    """
+
+    # initialize config dict
+    cdict = {}
+
+    # check for required env vars
+    if os.environ.get("REDIS_TLS_URL"):
+        # parse config url
+        url = urlparse(os.environ.get("REDIS_TLS_URL"))
+
+        # set configuration in dict
+        cdict["host"] = url.hostname
+        cdict["port"] = url.port
+        cdict["ssl"] = True
+        cdict["timeout"] = config.REDIS_DEFAULT_TIMEOUT
+
+    elif os.environ.get("REDIS_URL"):
+        # parse config url
+        url = urlparse(os.environ.get("REDIS_URL"))
+
+        # set configuration in dict
+        cdict["host"] = url.hostname
+        cdict["port"] = url.port
+        cdict["ssl"] = False
+        cdict["timeout"] = config.REDIS_DEFAULT_TIMEOUT
+
+    elif os.environ.get("REDIS_HOST"):
+        # set configuration in dict
+        cdict["host"] = os.environ.get("REDIS_HOST")
+
+        # check for optional port env
+        if os.environ.get("REDIS_PORT"):
+            # set configuration in dict
+            cdict["port"] = os.environ.get("REDIS_PORT")
+        else:
+            # set default configuration in dict
+            cdict["port"] = config.REDIS_DEFAULT_PORT
+
+        # check for optional ssl env
+        if os.environ.get("REDIS_SSL"):
+            # set configuration in dict
+            cdict["ssl"] = True
+        else:
+            # set default configuration in dict
+            cdict["ssl"] = config.REDIS_DEFAULT_SSL
+
+        # check for optional timeout env
+        if os.environ.get("REDIS_TIMEOUT"):
+            # set configuration in dict
+            cdict["timeout"] = os.environ.get("REDIS_TIMEOUT")
+        else:
+            # set default configuration in dict
+            cdict["timeout"] = config.REDIS_DEFAULT_TIMEOUT
+
+    else:
+        # set failed response
+        cdict = False
+
+    # return constructed dict
+    return cdict
+
+
+# test redis connection
+def redis_test(redis_config):
+    """
+    Test Redis connection with dict config.
+    """
+
+    # parse redis config and connect
+    try:
+        # start redis connection
+        rds = redis.Redis(
+            host=redis_config["host"],
+            port=redis_config["port"],
+            ssl=redis_config["ssl"],
+            socket_timeout=redis_config["timeout"],
+        )
+        # basic redis ping test
+        rds.ping()
+        # return redis available status
+        return True
+
+    except Exception as redis_error:
+        # print query parse error and return empty dict
+        print(
+            "The following error occured while trying to connect to Redis: \n > "
+            + str(redis_error)
+        )
+
+    # return redis available status
+    return False
+
+
+def cache_read(gameid):
+    """
+    Read app info from cache.
+    """
+
+    # parse redis config and connect
+    cfg = redis_config()
+    rds = redis.Redis(
+        host=cfg["host"],
+        port=cfg["port"],
+        ssl=cfg["ssl"],
+        socket_timeout=cfg["timeout"],
+    )
+
+    try:
+        # decode bytes to str
+        data = rds.get(gameid)
+        data = data.decode("UTF-8")
+
+        # return cached data
+        return data
+
+    except Exception as read_error:
+        # print query parse error and return empty dict
+        print(
+            "The following error occured while trying to read and decode "
+            + "from Redis cache: \n > "
+            + str(read_error)
+        )
+        # return failed status
+        return False
+
+
+def cache_write(gameid, data, expiration=config.CACHE_EXPIRATION):
+    """
+    Write app info to cache.
+    """
+
+    # parse redis config and connect
+    cfg = redis_config()
+    rds = redis.Redis(
+        host=cfg["host"],
+        port=cfg["port"],
+        ssl=cfg["ssl"],
+        socket_timeout=cfg["timeout"],
+    )
+
+    # write cache data and set ttl
+    try:
+        rds.set(gameid, data)
+        rds.expire(gameid, expiration)
+
+        # return succes status
+        return True
+
+    except Exception as redis_error:
+        # print query parse error and return empty dict
+        print(
+            "The following error occured while trying to write to Redis cache: \n > "
+            + str(redis_error)
+        )
+
+    # return fail status
+    return False
+
+
 # app definition
 def app(env, start_response):
     """
     Main application definition and entrypoint.
     """
+
+    # read redis config
+    rds_config = redis_config()
+    # only run test if config is set
+    if rds_config:
+        # test redis connection
+        rds_available = redis_test(rds_config)
+    else:
+        # test redis connection
+        rds_available = False
 
     # check if request method is allowed method
     if not method_check(env["REQUEST_METHOD"]):
@@ -292,46 +467,66 @@ def app(env, start_response):
         # execute and parse steamcmd
         if gameid:
 
-            # execute steamcmd
-            output = steamcmd(gameid)
+            # read cache if redis is available
+            if rds_available:
+                # check and retrieve cached data
+                cache_data = cache_read(gameid)
 
-            # set and check for not found error
-            error_search = "No app info for AppID " + gameid + " found"
-
-            # set 404 error if error appeared in output
-            if error_search in output:
+            # update and return data
+            if rds_available and cache_data:
+                # encode data to json
+                cache_data = json.loads(cache_data)
 
                 # set content and http status
-                status_code = "404 Not Found"
-                content = {
-                    "status": "error",
-                    "data": "No information for this specific app id "
-                    "could be found on Steam",
-                }
+                status_code = "200 OK"
+                content = {"status": "success", "data": cache_data}
 
-            # parse steamcmd output to json
             else:
+                # execute steamcmd
+                output = steamcmd(gameid)
 
-                # remove steamcmd info
-                data = strip(output, gameid)
+                # set and check for not found error
+                error_search = "No app info for AppID " + gameid + " found"
 
-                # parse vdf data
-                data = vdf.read(data)
-
-                # return status based on parse succces
-                if data:
-
-                    # set content and http status
-                    status_code = "200 OK"
-                    content = {"status": "success", "data": data}
-                else:
+                # set 404 error if error appeared in output
+                if error_search in output:
 
                     # set content and http status
-                    status_code = "500 Internal Server Error"
+                    status_code = "404 Not Found"
                     content = {
                         "status": "error",
-                        "data": "Something went wrong while parsing the app info from Steam. Please try again later",
+                        "data": "No information for this specific app id "
+                        "could be found on Steam",
                     }
+
+                # parse steamcmd output to json
+                else:
+
+                    # remove steamcmd info
+                    data = strip(output, gameid)
+
+                    # parse vdf data
+                    data = vdf.read(data)
+
+                    # write cache if redis is available
+                    if rds_available:
+                        # write data to cache
+                        write_status = cache_write(gameid, json.dumps(data))
+
+                    # return status based on parse succces
+                    if data:
+
+                        # set content and http status
+                        status_code = "200 OK"
+                        content = {"status": "success", "data": data}
+                    else:
+
+                        # set content and http status
+                        status_code = "500 Internal Server Error"
+                        content = {
+                            "status": "error",
+                            "data": "Something went wrong while parsing the app info from Steam. Please try again later",
+                        }
 
     elif parse_uri(env["PATH_INFO"])[1] == "version":
 
