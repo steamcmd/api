@@ -231,6 +231,8 @@ def redis_config():
         cdict["port"] = url.port
         cdict["ssl"] = True
         cdict["timeout"] = config.REDIS_DEFAULT_TIMEOUT
+        cdict["username"] = url.username
+        cdict["password"] = url.password
 
     elif os.environ.get("REDIS_URL"):
         # parse config url
@@ -241,6 +243,8 @@ def redis_config():
         cdict["port"] = url.port
         cdict["ssl"] = False
         cdict["timeout"] = config.REDIS_DEFAULT_TIMEOUT
+        cdict["username"] = url.username
+        cdict["password"] = url.password
 
     elif os.environ.get("REDIS_HOST"):
         # set configuration in dict
@@ -270,6 +274,22 @@ def redis_config():
             # set default configuration in dict
             cdict["timeout"] = config.REDIS_DEFAULT_TIMEOUT
 
+        # check for optional username env
+        if os.environ.get("REDIS_USERNAME"):
+            # set configuration in dict
+            cdict["username"] = os.environ.get("REDIS_USERNAME")
+        else:
+            # set default configuration in dict
+            cdict["username"] = ""
+
+        # check for optional password env
+        if os.environ.get("REDIS_PASSWORD"):
+            # set configuration in dict
+            cdict["password"] = os.environ.get("REDIS_PASSWORD")
+        else:
+            # set default configuration in dict
+            cdict["password"] = ""
+
     else:
         # set failed response
         cdict = False
@@ -291,6 +311,8 @@ def redis_test(redis_config):
             host=redis_config["host"],
             port=redis_config["port"],
             ssl=redis_config["ssl"],
+            username=redis_config["username"],
+            password=redis_config["password"],
             socket_timeout=redis_config["timeout"],
         )
         # basic redis ping test
@@ -320,12 +342,21 @@ def cache_read(gameid):
         host=cfg["host"],
         port=cfg["port"],
         ssl=cfg["ssl"],
+        username=cfg["username"],
+        password=cfg["password"],
         socket_timeout=cfg["timeout"],
     )
 
     try:
-        # decode bytes to str
+        # get info from cache
         data = rds.get(gameid)
+
+        # return if not found
+        if not data:
+            # return failed status
+            return False
+
+        # decode bytes to str
         data = data.decode("UTF-8")
 
         # return cached data
@@ -353,6 +384,8 @@ def cache_write(gameid, data, expiration=config.CACHE_EXPIRATION):
         host=cfg["host"],
         port=cfg["port"],
         ssl=cfg["ssl"],
+        username=cfg["username"],
+        password=cfg["password"],
         socket_timeout=cfg["timeout"],
     )
 
