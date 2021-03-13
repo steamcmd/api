@@ -313,7 +313,7 @@ def redis_test(redis_config):
             ssl=redis_config["ssl"],
             username=redis_config["username"],
             password=redis_config["password"],
-            socket_timeout=redis_config["timeout"]
+            socket_timeout=redis_config["timeout"],
         )
         # basic redis ping test
         rds.ping()
@@ -344,7 +344,7 @@ def cache_read(gameid):
         ssl=cfg["ssl"],
         username=cfg["username"],
         password=cfg["password"],
-        socket_timeout=cfg["timeout"]
+        socket_timeout=cfg["timeout"],
     )
 
     try:
@@ -386,7 +386,7 @@ def cache_write(gameid, data, expiration=config.CACHE_EXPIRATION):
         ssl=cfg["ssl"],
         username=cfg["username"],
         password=cfg["password"],
-        socket_timeout=cfg["timeout"]
+        socket_timeout=cfg["timeout"],
     )
 
     # write cache data and set ttl
