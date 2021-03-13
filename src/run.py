@@ -227,48 +227,48 @@ def redis_config():
         url = urlparse(os.environ.get("REDIS_TLS_URL"))
 
         # set configuration in dict
-        cdict['host'] = url.hostname
-        cdict['port'] = url.port
-        cdict['ssl']  = True
-        cdict['timeout'] = config.REDIS_DEFAULT_TIMEOUT
+        cdict["host"] = url.hostname
+        cdict["port"] = url.port
+        cdict["ssl"] = True
+        cdict["timeout"] = config.REDIS_DEFAULT_TIMEOUT
 
     elif os.environ.get("REDIS_URL"):
         # parse config url
         url = urlparse(os.environ.get("REDIS_URL"))
 
         # set configuration in dict
-        cdict['host'] = url.hostname
-        cdict['port'] = url.port
-        cdict['ssl']  = False
-        cdict['timeout'] = config.REDIS_DEFAULT_TIMEOUT
+        cdict["host"] = url.hostname
+        cdict["port"] = url.port
+        cdict["ssl"] = False
+        cdict["timeout"] = config.REDIS_DEFAULT_TIMEOUT
 
     elif os.environ.get("REDIS_HOST"):
         # set configuration in dict
-        cdict['host'] = os.environ.get("REDIS_HOST")
+        cdict["host"] = os.environ.get("REDIS_HOST")
 
         # check for optional port env
         if os.environ.get("REDIS_PORT"):
             # set configuration in dict
-            cdict['port'] = os.environ.get("REDIS_PORT")
+            cdict["port"] = os.environ.get("REDIS_PORT")
         else:
             # set default configuration in dict
-            cdict['port'] = config.REDIS_DEFAULT_PORT
+            cdict["port"] = config.REDIS_DEFAULT_PORT
 
         # check for optional ssl env
         if os.environ.get("REDIS_SSL"):
             # set configuration in dict
-            cdict['ssl'] = True
+            cdict["ssl"] = True
         else:
             # set default configuration in dict
-            cdict['ssl'] = config.REDIS_DEFAULT_SSL
+            cdict["ssl"] = config.REDIS_DEFAULT_SSL
 
         # check for optional timeout env
         if os.environ.get("REDIS_TIMEOUT"):
             # set configuration in dict
-            cdict['timeout'] = os.environ.get("REDIS_TIMEOUT")
+            cdict["timeout"] = os.environ.get("REDIS_TIMEOUT")
         else:
             # set default configuration in dict
-            cdict['timeout'] = config.REDIS_DEFAULT_TIMEOUT
+            cdict["timeout"] = config.REDIS_DEFAULT_TIMEOUT
 
     else:
         # set failed response
@@ -288,10 +288,10 @@ def redis_test(redis_config):
     try:
         # start redis connection
         rds = redis.Redis(
-            host = redis_config['host'],
-            port = redis_config['port'],
-            ssl  = redis_config['ssl'],
-            socket_timeout = redis_config['timeout'],
+            host=redis_config["host"],
+            port=redis_config["port"],
+            ssl=redis_config["ssl"],
+            socket_timeout=redis_config["timeout"],
         )
         # basic redis ping test
         rds.ping()
@@ -317,16 +317,16 @@ def cache_read(gameid):
     # parse redis config and connect
     cfg = redis_config()
     rds = redis.Redis(
-        host = cfg['host'],
-        port = cfg['port'],
-        ssl  = cfg['ssl'],
-        socket_timeout = cfg['timeout'],
+        host=cfg["host"],
+        port=cfg["port"],
+        ssl=cfg["ssl"],
+        socket_timeout=cfg["timeout"],
     )
 
     try:
         # decode bytes to str
         data = rds.get(gameid)
-        data = data.decode('UTF-8')
+        data = data.decode("UTF-8")
 
         # return cached data
         return data
@@ -341,7 +341,8 @@ def cache_read(gameid):
         # return failed status
         return False
 
-def cache_write(gameid, data, expiration = config.CACHE_EXPIRATION):
+
+def cache_write(gameid, data, expiration=config.CACHE_EXPIRATION):
     """
     Write app info to cache.
     """
@@ -349,10 +350,10 @@ def cache_write(gameid, data, expiration = config.CACHE_EXPIRATION):
     # parse redis config and connect
     cfg = redis_config()
     rds = redis.Redis(
-        host = cfg['host'],
-        port = cfg['port'],
-        ssl  = cfg['ssl'],
-        socket_timeout = cfg['timeout'],
+        host=cfg["host"],
+        port=cfg["port"],
+        ssl=cfg["ssl"],
+        socket_timeout=cfg["timeout"],
     )
 
     # write cache data and set ttl
