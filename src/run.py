@@ -383,8 +383,13 @@ def app(env, start_response):
 
     # read redis config
     rds_config = redis_config()
-    # test redis connection
-    rds_available = redis_test(rds_config)
+    # only run test if config is set
+    if rds_config:
+        # test redis connection
+        rds_available = redis_test(rds_config)
+    else:
+        # test redis connection
+        rds_available = False
 
     # check if request method is allowed method
     if not method_check(env["REQUEST_METHOD"]):
@@ -462,11 +467,13 @@ def app(env, start_response):
         # execute and parse steamcmd
         if gameid:
 
-            # check and retrieve cached data
-            cache_data = cache_read(gameid)
+            # read cache if redis is available
+            if rds_available:
+                # check and retrieve cached data
+                cache_data = cache_read(gameid)
 
             # update and return data
-            if cache_data:
+            if rds_available and cache_data:
                 # encode data to json
                 cache_data = json.loads(cache_data)
 
@@ -501,8 +508,10 @@ def app(env, start_response):
                     # parse vdf data
                     data = vdf.read(data)
 
-                    # write data to cache
-                    cache_write_status = cache_write(gameid, json.dumps(data))
+                    # write cache if redis is available
+                    if rds_available:
+                        # write data to cache
+                        write_status = cache_write(gameid, json.dumps(data))
 
                     # return status based on parse succces
                     if data:
