@@ -331,10 +331,15 @@ def cache_read(gameid):
         # return cached data
         return data
 
-    except:
+    except Exception as read_error:
+        # print query parse error and return empty dict
+        print(
+            "The following error occured while trying to read and decode "
+            + "from Redis cache: \n > "
+            + str(read_error)
+        )
         # return failed status
         return False
-
 
 def cache_write(gameid, data, expiration = config.CACHE_EXPIRATION):
     """
