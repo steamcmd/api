@@ -32,7 +32,7 @@ USER $USER
 WORKDIR $HOME
 
 # Copy application code
-COPY src/ $HOME/
+COPY --chown=$USER:$USER src/ $HOME/
 
 ##################### INSTALLATION END #####################
 
