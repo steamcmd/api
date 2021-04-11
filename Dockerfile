@@ -20,7 +20,7 @@ RUN apt-get update \
 
 # Install Python requirements
 COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install -U pip setuptools \
+RUN pip3 install --no-cache-dir -U pip setuptools \
  && pip3 install --no-cache-dir -r /tmp/requirements.txt \
  && rm /tmp/requirements.txt
 
