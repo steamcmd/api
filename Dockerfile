@@ -20,7 +20,8 @@ RUN apt-get update \
 
 # Install Python requirements
 COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install --no-cache-dir -r /tmp/requirements.txt \
+RUN pip3 install --no-cache-dir -U pip setuptools \
+ && pip3 install --no-cache-dir -r /tmp/requirements.txt \
  && rm /tmp/requirements.txt
 
 # Create the application user
@@ -31,7 +32,7 @@ USER $USER
 WORKDIR $HOME
 
 # Copy application code
-COPY src/ $HOME/
+COPY --chown=$USER:$USER src/ $HOME/
 
 ##################### INSTALLATION END #####################
 

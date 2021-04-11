@@ -3,7 +3,7 @@ name = "SteamCMD API"
 version = "1.1.0"
 description = "Read-only API interface for steamcmd app_info."
 authors = [
-    "Jona Koudijs <jona@koudijs.me>"
+    "Jona Koudijs"
 ]
 license = "MIT"
 readme = "README.md"
