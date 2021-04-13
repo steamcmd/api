@@ -13,7 +13,7 @@ ALLOWED_VERSIONS = ["v1"]
 AVAILABLE_ENDPOINTS = ["info", "version"]
 
 # default cache expiration (seconds)
-CACHE_EXPIRATION = 60
+CACHE_EXPIRATION = 120
 
 # default redis port
 REDIS_DEFAULT_PORT = 6379
