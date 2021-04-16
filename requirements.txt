@@ -1,4 +1,3 @@
 
 gunicorn
-redis
 semver
