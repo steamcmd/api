@@ -159,40 +159,6 @@ def strip(output, gameid):
     # return stripped output
     return output
 
-
-# check current version
-def parse_version():
-    """
-    Read and return current application version.
-    """
-
-    # read version file or set default
-    try:
-        # open and read version file
-        version_file = open(config.VERSION_FILE, "r")
-        version = version_file.read()
-
-        # strip whitespace and newlines
-        version = version.rstrip()
-        # parse through semver and return version
-        return semver.parse(version)
-
-    except FileNotFoundError:
-        # print error
-        print("Version file ('" + config.VERSION_FILE + "') not found!")
-        # return default False when error
-        return False
-
-    except ValueError as parse_error:
-        # print error
-        print(
-            "Incorrect version used. Use the semver syntax. Received following error: \n > "
-            + str(parse_error)
-        )
-        # return default False when error
-        return False
-
-
 # app definition
 def app(env, start_response):
     """
