@@ -94,23 +94,6 @@ def method_check(method):
     return False
 
 
-# api version check
-def version_check(version):
-    """
-    Check given version and return boolean.
-    """
-
-    # list of allowed versions
-    allowed_versions = config.ALLOWED_VERSIONS
-
-    # return true if allowed version
-    if version in allowed_versions:
-        return True
-
-    # return false if no allowed version
-    return False
-
-
 # clean steam cache
 def clean_appcache():
     """
@@ -236,22 +219,8 @@ def app(env, start_response):
             "data": "This http method is not allowed. Please check the docs",
         }
 
-    # check if proper version and endpoint is given
-    elif (
-        not len(parse_uri(env["PATH_INFO"])) >= 2
-        or not parse_uri(env["PATH_INFO"])[0] in config.ALLOWED_VERSIONS
-        or not parse_uri(env["PATH_INFO"])[1] in config.AVAILABLE_ENDPOINTS
-    ):
-
-        # set content and http status
-        status_code = "400 Bad Request"
-        content = {
-            "status": "error",
-            "data": "Incorrect version and/or endpoint used. Please check the docs",
-        }
-
     # execute when 'info' endpoint is used
-    elif parse_uri(env["PATH_INFO"])[1] == "info":
+    if parse_uri(env["PATH_INFO"])[1] == "info":
 
         # try converting given app id to int
         try:
@@ -363,18 +332,6 @@ def app(env, start_response):
                             "data": "Something went wrong while parsing the app info from Steam. Please try again later",
                         }
 
-    elif parse_uri(env["PATH_INFO"])[1] == "version":
-
-        # read and parse version from file
-        version_semver = parse_version()
-
-        # check if version succesfully read and parsed
-        if version_semver:
-
-            # set content and http status
-            status_code = "200 OK"
-            content = {"status": "success", "data": version_semver}
-        else:
 
             # set content and http status
             status_code = "500 Internal Server Error"
