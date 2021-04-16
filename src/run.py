@@ -258,9 +258,6 @@ def app(env, start_response):
                     "data": "Something went wrong while parsing the app info from Steam. Please try again later",
                 }
 
-    # parse query parameters
-    parameters = query(env["QUERY_STRING"])
-
     # decode to json
     content = json.dumps(content)
 
