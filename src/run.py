@@ -199,16 +199,6 @@ def app(env, start_response):
     Main application definition and entrypoint.
     """
 
-    # read redis config
-    rds_config = redis_config()
-    # only run test if config is set
-    if rds_config:
-        # test redis connection
-        rds_available = redis_test(rds_config)
-    else:
-        # test redis connection
-        rds_available = False
-
     # check if request method is allowed method
     if not method_check(env["REQUEST_METHOD"]):
 
@@ -271,19 +261,6 @@ def app(env, start_response):
         # execute and parse steamcmd
         if gameid:
 
-            # read cache if redis is available
-            if rds_available:
-                # check and retrieve cached data
-                cache_data = cache_read(gameid)
-
-            # update and return data
-            if rds_available and cache_data:
-                # encode data to json
-                cache_data = json.loads(cache_data)
-
-                # set content and http status
-                status_code = "200 OK"
-                content = {"status": "success", "data": cache_data}
 
             else:
                 # execute steamcmd
@@ -312,25 +289,6 @@ def app(env, start_response):
                     # parse vdf data
                     data = vdf.read(data)
 
-                    # write cache if redis is available
-                    if rds_available:
-                        # write data to cache
-                        write_status = cache_write(gameid, json.dumps(data))
-
-                    # return status based on parse succces
-                    if data:
-
-                        # set content and http status
-                        status_code = "200 OK"
-                        content = {"status": "success", "data": data}
-                    else:
-
-                        # set content and http status
-                        status_code = "500 Internal Server Error"
-                        content = {
-                            "status": "error",
-                            "data": "Something went wrong while parsing the app info from Steam. Please try again later",
-                        }
 
 
             # set content and http status
