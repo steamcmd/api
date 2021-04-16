@@ -261,42 +261,30 @@ def app(env, start_response):
         # execute and parse steamcmd
         if gameid:
 
+            # execute steamcmd
+            output = steamcmd(gameid)
 
+
+            # remove steamcmd info
+            data = strip(output, gameid)
+
+            # parse vdf data
+            data = vdf.read(data)
+
+            # return status based on parse succces
+            if data:
+
+                # set content and http status
+                status_code = "200 OK"
+                content = {"status": "success", "data": data}
             else:
-                # execute steamcmd
-                output = steamcmd(gameid)
 
-                # set and check for not found error
-                error_search = "No app info for AppID " + gameid + " found"
-
-                # set 404 error if error appeared in output
-                if error_search in output:
-
-                    # set content and http status
-                    status_code = "404 Not Found"
-                    content = {
-                        "status": "error",
-                        "data": "No information for this specific app id "
-                        "could be found on Steam",
-                    }
-
-                # parse steamcmd output to json
-                else:
-
-                    # remove steamcmd info
-                    data = strip(output, gameid)
-
-                    # parse vdf data
-                    data = vdf.read(data)
-
-
-
-            # set content and http status
-            status_code = "500 Internal Server Error"
-            content = {
-                "status": "error",
-                "data": "Something went wrong while retrieving and parsing the current API version. Please try again later",
-            }
+                # set content and http status
+                status_code = "500 Internal Server Error"
+                content = {
+                    "status": "error",
+                    "data": "Something went wrong while parsing the app info from Steam. Please try again later",
+                }
 
     # parse query parameters
     parameters = query(env["QUERY_STRING"])
