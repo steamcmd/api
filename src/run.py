@@ -176,14 +176,20 @@ def app(env, start_response):
         }
 
     # execute when 'info' endpoint is used
-    if parse_uri(env["PATH_INFO"])[1] == "info":
+    if parse_uri(env["PATH_INFO"])[0] == "info":
 
         # try converting given app id to int
         try:
-            # set gameid variable
-            gameid = parse_uri(env["PATH_INFO"])[2]
-            # check if gameid is integer
-            float(gameid).is_integer()
+            gameid = parse_uri(env["PATH_INFO"])[1]
+
+            if gameid == "client":
+                gameid = 252490 # https://steamdb.info/app/252490/
+
+            elif gameid == "server":
+                gameid = 258550 # https://steamdb.info/app/258550/
+
+            else:
+                gameid = False
 
         except IndexError:
 
