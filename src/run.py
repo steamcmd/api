@@ -183,10 +183,10 @@ def app(env, start_response):
             gameid = parse_uri(env["PATH_INFO"])[1]
 
             if gameid == "client":
-                gameid = 252490 # https://steamdb.info/app/252490/
+                gameid = "252490" # https://steamdb.info/app/252490/
 
             elif gameid == "server":
-                gameid = 258550 # https://steamdb.info/app/258550/
+                gameid = "258550" # https://steamdb.info/app/258550/
 
             else:
                 gameid = False
