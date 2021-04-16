@@ -386,15 +386,8 @@ def app(env, start_response):
     # parse query parameters
     parameters = query(env["QUERY_STRING"])
 
-    # check if pretty print enabled
-    if "pretty" in parameters and parameters["pretty"] == "1":
-
-        # decode to json and pretty print
-        content = json.dumps(content, indent=4, sort_keys=True)
-
-    else:
-        # decode to json
-        content = json.dumps(content)
+    # decode to json
+    content = json.dumps(content)
 
     # decode to bytes
     data = content.encode("UTF-8")
