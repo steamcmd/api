@@ -37,5 +37,4 @@ COPY --chown=$USER:$USER src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
-ENTRYPOINT [""]
 CMD gunicorn --workers $WORKERS --threads $THREADS --timeout $TIMEOUT --bind :$PORT run:app
