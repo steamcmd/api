@@ -38,4 +38,4 @@ COPY --chown=$USER:$USER src/ $HOME/
 
 # Set default container command
 ENTRYPOINT [ "/bin/bash", "-l", "-c" ]
-CMD gunicorn --workers $WORKERS --threads $THREADS --timeout $TIMEOUT --bind :$PORT run:app
+CMD ["gunicorn --workers $WORKERS --threads $THREADS --timeout $TIMEOUT --bind :$PORT run:app"]
