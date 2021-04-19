@@ -38,4 +38,4 @@ COPY --chown=$USER:$USER src/ $HOME/
 
 # Set default container command
 ENTRYPOINT [""]
-CMD gunicorn --workers $WORKERS --threads $THREADS --timeout $TIMEOUT --bind :$PORT run:app
+CMD steamcmd +quit && gunicorn --workers $WORKERS --threads $THREADS --timeout $TIMEOUT --bind :$PORT run:app
