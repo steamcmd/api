@@ -6,15 +6,6 @@ process:
     # optional attributes
     skip: false
 
-port:
-  tcp:8080:
-    # required attributes
-    listening: true
-    # optional attributes
-    ip:
-      - 0.0.0.0
-    skip: false
-
 http:
   http://127.0.0.1:8080/v1/info/740:
     # required attributes
