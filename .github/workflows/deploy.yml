@@ -66,6 +66,7 @@ jobs:
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           usedocker: true
+          delay: 30
           docker_heroku_process_type: web
 
   warmup-api:
