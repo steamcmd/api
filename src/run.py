@@ -146,51 +146,61 @@ def steamcmd(gameid):
     clean_appcache()
 
     # start steamcmd subprocess with stdout/stdin piped
-    proc = subprocess.Popen(["steamcmd", "+login", "anonymous", "+app_info_update", "1", "+app_info_print", gameid,],
-                            stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
+    proc = subprocess.Popen(
+        [
+            "steamcmd",
+            "+login",
+            "anonymous",
+            "+app_info_update",
+            "1",
+            "+app_info_print",
+            gameid,
+        ],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
 
     # read stdout until we see the input prompt "Steam>"
-    for line in iter(proc.stdout.readline, ''):
+    for line in iter(proc.stdout.readline, ""):
         print(line.decode("utf-8"))
         # This  triggers the Steam> prompt to enter a newline so we can check for it with readline.
-        proc.stdin.write(b'\n') 
+        proc.stdin.write(b"\n")
         proc.stdin.flush()
         if "Steam>" in line.decode("utf-8"):
             break
 
     # Send request for app_info_print to stdin
-    app_info_print = 'app_info_print ' + gameid + '\n'
+    app_info_print = "app_info_print " + gameid + "\n"
     proc.stdin.write(app_info_print.encode())
     proc.stdin.flush()
-    output = b''
-    # Format of a valid fulfilled response: 
+    output = b""
+    # Format of a valid fulfilled response:
     # TODO This should allow anything other than 0 at the end
-    valid_result = ", change number : 1" 
+    valid_result = ", change number : 1"
     # Continiously request app_info_print gameid until we see a valid response.
     while valid_result not in output.decode("utf-8"):
-        for line in iter(proc.stdout.readline, ''):
+        for line in iter(proc.stdout.readline, ""):
             print(line.decode("utf-8"))
             output = output + line
             if "Steam>" in line.decode("utf-8"):
                 proc.stdin.write(app_info_print.encode())
                 proc.stdin.flush()
-                break 
+                break
             # Send newline to stdin to see if the "Steam>" prompt is present
-            proc.stdin.write(b'\n')
+            proc.stdin.write(b"\n")
             proc.stdin.flush()
     # Get the output one last time cleanly
     proc.stdin.write(app_info_print.encode())
     proc.stdin.flush()
-    output = b''
-    for line in iter(proc.stdout.readline, ''):
-        proc.stdin.write(b'\n')
+    output = b""
+    for line in iter(proc.stdout.readline, ""):
+        proc.stdin.write(b"\n")
         proc.stdin.flush()
         if "Steam>" in line.decode("utf-8"):
             proc.stdin.write(app_info_print.encode())
             proc.stdin.flush()
-            break 
+            break
         output = output + line
     proc.stdin.write(b"quit")
     proc.stdin.flush()
