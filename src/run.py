@@ -176,7 +176,7 @@ def steamcmd(gameid):
     proc.stdin.flush()
     output = b""
     # Format of a valid fulfilled response:
-    # TODO This should allow anything other than 0 at the end
+    # TODO This should allow anything other than 0 at the end but this should work for a few years.
     valid_result = ", change number : 1"
     # Continiously request app_info_print gameid until we see a valid response.
     while valid_result not in output.decode("utf-8"):
@@ -198,8 +198,6 @@ def steamcmd(gameid):
         proc.stdin.write(b"\n")
         proc.stdin.flush()
         if "Steam>" in line.decode("utf-8"):
-            proc.stdin.write(app_info_print.encode())
-            proc.stdin.flush()
             break
         output = output + line
     proc.stdin.write(b"quit")
