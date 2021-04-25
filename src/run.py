@@ -4,7 +4,7 @@ Main application and entrypoint.
 """
 
 # import modules
-import subprocess import
+import subprocess
 import semver
 import json
 import redis
