@@ -176,7 +176,7 @@ def steamcmd(gameid):
     proc.stdin.flush()
     output = b""
     # Format of a valid fulfilled response:
-    valid_result = re.compile(', change number : [1-9]')
+    valid_result = re.compile(", change number : [1-9]")
     # Continiously request app_info_print gameid until we see a valid response.
     while not re.search(valid_result, output.decode("utf-8")):
         for line in iter(proc.stdout.readline, ""):
@@ -199,14 +199,14 @@ def steamcmd(gameid):
         if "Steam>" in line.decode("utf-8"):
             break
         output = output + line
-        
+
     # Close steamcmd and return output
     proc.stdin.write(b"quit")
     proc.stdin.flush()
     proc.stdin.close()
     proc.terminate()
     proc.wait(timeout=0.2)
-    
+
     return output.decode("UTF-8")
 
 
