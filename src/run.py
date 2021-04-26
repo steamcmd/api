@@ -5,6 +5,7 @@ Main application and entrypoint.
 
 # import modules
 import subprocess
+import re
 import semver
 import json
 import redis
@@ -163,7 +164,6 @@ def steamcmd(gameid):
 
     # read stdout until we see the input prompt "Steam>"
     for line in iter(proc.stdout.readline, ""):
-        print(line.decode("utf-8"))
         # This  triggers the Steam> prompt to enter a newline so we can check for it with readline.
         proc.stdin.write(b"\n")
         proc.stdin.flush()
@@ -176,12 +176,10 @@ def steamcmd(gameid):
     proc.stdin.flush()
     output = b""
     # Format of a valid fulfilled response:
-    # TODO This should allow anything other than 0 at the end but this should work for a few years.
-    valid_result = ", change number : 1"
+    valid_result = re.compile(', change number : [1-9]')
     # Continiously request app_info_print gameid until we see a valid response.
-    while valid_result not in output.decode("utf-8"):
+    while not re.search(valid_result, output.decode("utf-8")):
         for line in iter(proc.stdout.readline, ""):
-            print(line.decode("utf-8"))
             output = output + line
             if "Steam>" in line.decode("utf-8"):
                 proc.stdin.write(app_info_print.encode())
@@ -193,6 +191,7 @@ def steamcmd(gameid):
     # Get the output one last time cleanly
     proc.stdin.write(app_info_print.encode())
     proc.stdin.flush()
+
     output = b""
     for line in iter(proc.stdout.readline, ""):
         proc.stdin.write(b"\n")
@@ -200,13 +199,14 @@ def steamcmd(gameid):
         if "Steam>" in line.decode("utf-8"):
             break
         output = output + line
+        
+    # Close steamcmd and return output
     proc.stdin.write(b"quit")
     proc.stdin.flush()
     proc.stdin.close()
     proc.terminate()
     proc.wait(timeout=0.2)
-    # Close steamcmd and return output
-
+    
     return output.decode("UTF-8")
 
 
