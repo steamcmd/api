@@ -49,7 +49,7 @@ docker-compose up
 ```
 Now you can reach the SteamCMD API locally on [http://localhost:8080](http://localhost:8080)
 
-To keep it simple, [Black](https://github.com/python/black) is used for code style / formatting. Part of the pipeline
+To keep things simple, [Black](https://github.com/python/black) is used for code style / formatting. Part of the pipeline
 will check if the code is properly formatted according to Black code style. You can install it locally via pip:
 ```
 pip install black

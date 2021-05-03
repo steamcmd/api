@@ -1,0 +1,7 @@
+---
+port:
+  tcp:8080:
+    listening: true
+    ip:
+      - 0.0.0.0
+    skip: false
