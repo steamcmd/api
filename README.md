@@ -42,7 +42,8 @@ heroku container:release web --app yourappname
 
 The easiest way to spin up the development environment is using Docker compose.
 This will build the image locally, mount the correct directory (`src`) and set
-the required environment variables. Just execute compose up in the root:
+the required environment variables. If you are on windows you should store the 
+repository in the WSL filesystem or it will fail. Execute compose up in the root:
 ```
 docker-compose up
 ```
