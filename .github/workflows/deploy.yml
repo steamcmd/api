@@ -36,7 +36,7 @@ jobs:
       - name: Tag Image
         run: docker tag steamcmd/api:latest steamcmd/api:$API_VERSION
       - name: Push Image
-        run: docker push steamcmd/api
+        run: docker push steamcmd/api --all-tags
 
   update-readme:
     name: Update Readme
