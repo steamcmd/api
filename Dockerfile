@@ -1,5 +1,5 @@
 # Set the base image steamcmd
-FROM steamcmd/steamcmd:ubuntu-18
+FROM steamcmd/steamcmd:ubuntu-20
 
 # Set environment variables
 ENV USER steamcmd
