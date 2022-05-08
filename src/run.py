@@ -4,7 +4,8 @@ Main application and entrypoint.
 """
 
 # import modules
-from subprocess import check_output
+import subprocess
+import re
 import semver
 import json
 from urllib.parse import urlparse
@@ -127,21 +128,68 @@ def steamcmd(gameid):
     # cleanup cache files
     clean_appcache()
 
-    # define steamcmd command
-    cmd = [
-        "steamcmd",
-        "+login",
-        "anonymous",
-        "+app_info_update",
-        "1",
-        "+app_info_print",
-        gameid,
-        "+quit",
-    ]
-    # execute steamcmd and capture output
-    out = check_output(cmd)
-    # return decoded bytes to string output
-    return out.decode("UTF-8")
+    # start steamcmd subprocess with stdout/stdin piped
+    proc = subprocess.Popen(
+        [
+            "steamcmd",
+            "+login",
+            "anonymous",
+            "+app_info_update",
+            "1",
+            "+app_info_print",
+            gameid,
+        ],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+    # read stdout until we see the input prompt "Steam>"
+    for line in iter(proc.stdout.readline, ""):
+        # This  triggers the Steam> prompt to enter a newline so we can check for it with readline.
+        proc.stdin.write(b"\n")
+        proc.stdin.flush()
+        if "Steam>" in line.decode("utf-8"):
+            break
+
+    # Send request for app_info_print to stdin
+    app_info_print = "app_info_print " + gameid + "\n"
+    proc.stdin.write(app_info_print.encode())
+    proc.stdin.flush()
+    output = b""
+    # Format of a valid fulfilled response:
+    valid_result = re.compile(", change number : [1-9]")
+    # Continiously request app_info_print gameid until we see a valid response.
+    while not re.search(valid_result, output.decode("utf-8")):
+        for line in iter(proc.stdout.readline, ""):
+            output = output + line
+            if "Steam>" in line.decode("utf-8"):
+                proc.stdin.write(app_info_print.encode())
+                proc.stdin.flush()
+                break
+            # Send newline to stdin to see if the "Steam>" prompt is present
+            proc.stdin.write(b"\n")
+            proc.stdin.flush()
+    # Get the output one last time cleanly
+    proc.stdin.write(app_info_print.encode())
+    proc.stdin.flush()
+
+    output = b""
+    for line in iter(proc.stdout.readline, ""):
+        proc.stdin.write(b"\n")
+        proc.stdin.flush()
+        if "Steam>" in line.decode("utf-8"):
+            break
+        output = output + line
+
+    # Close steamcmd and return output
+    proc.stdin.write(b"quit")
+    proc.stdin.flush()
+    proc.stdin.close()
+    proc.terminate()
+    proc.wait(timeout=0.2)
+
+    return output.decode("UTF-8")
 
 
 # strip steamcmd output

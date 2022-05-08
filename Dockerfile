@@ -1,5 +1,5 @@
 # Set the base image steamcmd
-FROM steamcmd/steamcmd:ubuntu-18
+FROM steamcmd/steamcmd:ubuntu-20
 
 # Set environment variables
 ENV USER steamcmd
@@ -39,3 +39,5 @@ COPY --chown=$USER:$USER src/ $HOME/
 # Set default container command
 ENTRYPOINT [ "/bin/bash", "-l", "-c" ]
 CMD ["gunicorn --workers $WORKERS --threads $THREADS --timeout $TIMEOUT --bind :$PORT run:app"]
+#ENTRYPOINT [""]
+#CMD steamcmd +quit && gunicorn --workers $WORKERS --threads $THREADS --timeout $TIMEOUT --bind :$PORT run:app

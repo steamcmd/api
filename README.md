@@ -2,7 +2,7 @@
 [![Snyk Vulnerabilities](https://snyk.io/test/github/steamcmd/api/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/steamcmd/api)
 [![CodeFactor](https://www.codefactor.io/repository/github/steamcmd/api/badge)](https://www.codefactor.io/repository/github/steamcmd/api)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
-[![Service Status](https://img.shields.io/static/v1?label=service&message=status&color=blue)](https://status.steamcmd.net/782827237)
+[![Service Status](https://img.shields.io/static/v1?label=service&message=status&color=blue)](https://status.steamcmd.net)
 [![Image Size](https://img.shields.io/docker/image-size/steamcmd/api/latest.svg)](https://hub.docker.com/r/steamcmd/api)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/steamcmd/api?label=version)](https://github.com/steamcmd/api/releases)
@@ -42,13 +42,14 @@ heroku container:release web --app yourappname
 
 The easiest way to spin up the development environment is using Docker compose.
 This will build the image locally, mount the correct directory (`src`) and set
-the required environment variables. Just execute compose up in the root:
+the required environment variables. If you are on windows you should store the 
+repository in the WSL filesystem or it will fail. Execute compose up in the root:
 ```
 docker-compose up
 ```
 Now you can reach the SteamCMD API locally on [http://localhost:8080](http://localhost:8080)
 
-To keep it simple, [Black](https://github.com/python/black) is used for code style / formatting. Part of the pipeline
+To keep things simple, [Black](https://github.com/python/black) is used for code style / formatting. Part of the pipeline
 will check if the code is properly formatted according to Black code style. You can install it locally via pip:
 ```
 pip install black
