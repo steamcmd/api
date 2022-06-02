@@ -84,8 +84,8 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          images: ${{ env.CONTAINER_REGISTRY }}/nodejsapp:${{ env.API_VERSION }}
+          app-name: bh-rd-bnf-steamcmd-app-api
+          images: docker.io/steamcmd/api:${{ env.API_VERSION }}
 
   warmup-api:
     name: Warmup API
