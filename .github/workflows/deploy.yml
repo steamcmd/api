@@ -73,6 +73,7 @@ jobs:
   deploy-azure:
     name: Deploy Azure
     runs-on: ubuntu-18.04
+    needs: deploy-image
     steps:
       - uses: actions/checkout@v2
       - name: Parse API Version
