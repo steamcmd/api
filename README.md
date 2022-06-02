@@ -11,7 +11,7 @@
 
 Read-only API interface for steamcmd app_info
 
-### Container Image
+### Container
 
 The API is run via a Docker image which contains both the `steamcmd` binary and
 the Python code which is wrapped around it. You can build and run the container
@@ -23,16 +23,18 @@ docker run -p 8080:8080 -d steamcmd-api:test
 However during development, using Docker Compose is preferred.
 See the [Development](#development) section for information.
 
-### Deploying
+### Hosting
 
-Newer versions of the API are automatically deployed on Heroku when a new version
-has been created on Github. Deployment is done via [Github Actions](https://github.com/steamcmd/api/actions)
+Newer versions of the API are automatically deployed on Azure when a new version
+has been created on Github, see the [deploy workflow](.github/workflows/deploy.yml).
+Deployment is done via [Github Actions](https://github.com/steamcmd/api/actions).
 
-If you want or need to deploy manually you will have to authenticate locally:
+Deploying to Heroku can be done to easily host it yourself. First authenticate
+locally with the `heroku` cli:
 ```
 heroku container:login
 ```
-And use the following deployment commands:
+Then use the following deployment commands:
 ```
 heroku container:push web --app yourappname
 heroku container:release web --app yourappname
@@ -42,7 +44,7 @@ heroku container:release web --app yourappname
 
 The easiest way to spin up the development environment is using Docker compose.
 This will build the image locally, mount the correct directory (`src`) and set
-the required environment variables. If you are on windows you should store the 
+the required environment variables. If you are on windows you should store the
 repository in the WSL filesystem or it will fail. Execute compose up in the root:
 ```
 docker-compose up

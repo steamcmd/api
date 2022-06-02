@@ -70,6 +70,23 @@ jobs:
           usedocker: true
           docker_heroku_process_type: web
 
+  deploy-azure:
+    name: Deploy Azure
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Parse API Version
+        run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
+      - name: Login via Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: bh-rd-bnf-steamcmd-app-api
+          images: docker.io/steamcmd/api:${{ env.API_VERSION }}
+
   warmup-api:
     name: Warmup API
     runs-on: ubuntu-18.04
