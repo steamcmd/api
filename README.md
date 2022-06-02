@@ -25,14 +25,16 @@ See the [Development](#development) section for information.
 
 ### Hosting
 
-Newer versions of the API are automatically deployed on Heroku when a new version
-has been created on Github. Deployment is done via [Github Actions](https://github.com/steamcmd/api/actions).
+Newer versions of the API are automatically deployed on Azure when a new version
+has been created on Github, see the [deploy workflow](.github/workflows/deploy.yml).
+Deployment is done via [Github Actions](https://github.com/steamcmd/api/actions).
 
-If you want or need to deploy manually you will have to authenticate locally:
+Deploying to Heroku can be done to easily host it yourself. First authenticate
+locally with the `heroku` cli:
 ```
 heroku container:login
 ```
-And use the following deployment commands:
+Then use the following deployment commands:
 ```
 heroku container:push web --app yourappname
 heroku container:release web --app yourappname
