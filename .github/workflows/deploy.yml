@@ -89,9 +89,7 @@ jobs:
   warmup-api:
     name: Warmup API
     runs-on: ubuntu-18.04
-    needs: deploy-heroku
+    needs: deploy-caprover
     steps:
-      - name: Call API Cold
-        run: curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1 || true
-      - name: Call API Warm
+      - name: Call SteamCMD API
         run: curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
