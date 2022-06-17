@@ -82,8 +82,8 @@ jobs:
         uses: mrfreasy/action-caprover@v2
         with:
           app: '${{ secrets.CAPROVER_APP }}'
-          host: '${{ secrets.CAPROVER_HOST }}'
-          token: '${{ secrets.CAPROVER_TOKEN }}'
+          host: '${{ secrets.CAPROVER_URL }}'
+          token: '${{ secrets.CAPROVER_APP_TOKEN }}'
           image: 'steamcmd/api:${{ env.API_VERSION }}'
 
   warmup-api:
