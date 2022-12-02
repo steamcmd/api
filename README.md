@@ -7,6 +7,7 @@
 [![Image Size](https://img.shields.io/docker/image-size/steamcmd/api/latest.svg)](https://hub.docker.com/r/steamcmd/api)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/steamcmd/api?label=version)](https://github.com/steamcmd/api/releases)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/jonakoudijs)](https://github.com/sponsors/jonakoudijs)
 
 # SteamCMD API
 
