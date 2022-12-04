@@ -27,11 +27,11 @@ See the [Development](#development) section for information.
 
 ### Hosting
 
-Newer versions of the API are automatically deployed on Azure when a new version
+Newer versions of the API are automatically deployed on Deta when a new version
 has been created on Github, see the [deploy workflow](.github/workflows/deploy.yml).
 Deployment is done via [Github Actions](https://github.com/steamcmd/api/actions).
 
-Deploying to Heroku can be done to easily host it yourself. First authenticate
+Deploying to Deta can be done to easily host it yourself. First authenticate
 locally with the `heroku` cli:
 ```
 heroku container:login
@@ -44,17 +44,28 @@ heroku container:release web --app yourappname
 
 ### Development
 
+Run the api locally by installing a web server like uvicorn and running it:
+```
+cd src/
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install uvicorn
+uvicorn main:app --reload
+```
+
 The easiest way to spin up the development environment is using Docker compose.
 This will build the image locally, mount the correct directory (`src`) and set
 the required environment variables. If you are on windows you should store the
 repository in the WSL filesystem or it will fail. Execute compose up in the root:
 ```
-docker-compose up
+docker compose up
 ```
 Now you can reach the SteamCMD API locally on [http://localhost:8080](http://localhost:8080)
 
-To keep things simple, [Black](https://github.com/python/black) is used for code style / formatting. Part of the pipeline
-will check if the code is properly formatted according to Black code style. You can install it locally via pip:
+To keep things simple, [Black](https://github.com/python/black) is used for code
+style / formatting. Part of the pipeline will check if the code is properly
+formatted according to Black code style. You can install it locally via pip:
 ```
 pip install black
 ```

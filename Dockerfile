@@ -1,26 +1,19 @@
 # Set the base image steamcmd
-FROM steamcmd/steamcmd:ubuntu-20
+FROM python:3.9
 
 # Set environment variables
 ENV USER steamcmd
 ENV HOME /data
 
-ENV PORT 8080
-ENV WORKERS 1
-ENV THREADS 8
+ENV PORT 8000
+ENV WORKERS 4
 ENV TIMEOUT 120
 
 ################## BEGIN INSTALLATION ######################
 
-# Update the repository and install prerequisites
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update \
- && apt-get install -y --no-install-recommends lib32stdc++6 python3 python3-pip \
- && rm -rf /var/lib/apt/lists/*
-
 # Install Python requirements
 COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install --no-cache-dir -U pip setuptools \
+RUN pip3 install --no-cache-dir uvicorn \
  && pip3 install --no-cache-dir -r /tmp/requirements.txt \
  && rm /tmp/requirements.txt
 
@@ -37,5 +30,8 @@ COPY --chown=$USER:$USER src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
+#ENTRYPOINT [""]
+#CMD uvicorn --workers $WORKERS --port $PORT main:app
+
 ENTRYPOINT [""]
-CMD steamcmd +quit && gunicorn --workers $WORKERS --threads $THREADS --timeout $TIMEOUT --bind :$PORT run:app
+CMD uvicorn --host 0.0.0.0 --port $PORT --workers $WORKERS main:app

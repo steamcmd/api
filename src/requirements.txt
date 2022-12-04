@@ -1,9 +1,0 @@
-fastapi
-redis
-deta
-
-python-dotenv
-semver
-
-steam[client]
-gevent

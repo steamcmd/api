@@ -56,6 +56,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
+      - name: Copy requirements file to source dir
+        run: cp requirements.txt src/
       - name: Deploy API on Deta
         uses: HarshKapadia2/deta-deploy@v1.0.2
         with:
@@ -63,7 +65,6 @@ jobs:
           deta-name: '${{ secrets.DETA_MICRO_NAME }}'
           deta-project: '${{ secrets.DETA_PROJECT_NAME }}'
           deta-project-dir: 'src'
-
       - name: Prepare environment file
         run: |
           cat > src/.env<< EOF
