@@ -22,8 +22,13 @@ def app_info(app_id):
 
             try:
                 with gevent.Timeout(connect_timeout):
-                    print('Connecting via steamclient')
-                    print('Retrieving app info for: ' + str(app_id) + ', retry count: ' + count)
+                    print("Connecting via steamclient")
+                    print(
+                        "Retrieving app info for: "
+                        + str(app_id)
+                        + ", retry count: "
+                        + count
+                    )
 
                     client = SteamClient()
                     client.anonymous_login()
@@ -36,13 +41,13 @@ def app_info(app_id):
                 client._connecting = False
 
             else:
-                print('Succesfully retrieved app info for app id: ' + str(app_id))
+                print("Succesfully retrieved app info for app id: " + str(app_id))
                 break
         else:
-            raise Exception(f'Max connect retries ({connect_retries}) exceeded')
+            raise Exception(f"Max connect retries ({connect_retries}) exceeded")
 
     except Exception as err:
-        print('Failed in retrieving app info for app id: ' + str(app_id))
+        print("Failed in retrieving app info for app id: " + str(app_id))
         print(err)
 
 
@@ -51,29 +56,30 @@ def cache_read(app_id):
     Read app info from chosen cache.
     """
 
-    if  os.environ['CACHE_TYPE'] == "redis":
+    if os.environ["CACHE_TYPE"] == "redis":
         return redis_read(app_id)
-    elif os.environ['CACHE_TYPE'] == "deta":
+    elif os.environ["CACHE_TYPE"] == "deta":
         return deta_read(app_id)
     else:
         # print query parse error and return empty dict
-        print("Incorrect set cache type: " + os.environ['CACHE_TYPE'])
+        print("Incorrect set cache type: " + os.environ["CACHE_TYPE"])
 
     # return failed status
     return False
+
 
 def cache_write(app_id, data):
     """
     write app info to chosen cache.
     """
 
-    if os.environ['CACHE_TYPE'] == "redis":
+    if os.environ["CACHE_TYPE"] == "redis":
         return redis_write(app_id, data)
-    elif os.environ['CACHE_TYPE'] == "deta":
+    elif os.environ["CACHE_TYPE"] == "deta":
         return deta_write(app_id, data)
     else:
         # print query parse error and return empty dict
-        print("Incorrect set cache type: " + os.environ['CACHE_TYPE'])
+        print("Incorrect set cache type: " + os.environ["CACHE_TYPE"])
 
     # return failed status
     return False
@@ -86,9 +92,9 @@ def redis_read(app_id):
 
     # parse redis config and connect
     rds = redis.Redis(
-        host=os.environ['REDIS_HOST'],
-        port=os.environ['REDIS_PORT'],
-        password=os.environ['REDIS_PASSWORD']
+        host=os.environ["REDIS_HOST"],
+        port=os.environ["REDIS_PORT"],
+        password=os.environ["REDIS_PASSWORD"],
     )
 
     try:
@@ -119,6 +125,7 @@ def redis_read(app_id):
         # return failed status
         return False
 
+
 def redis_write(app_id, data):
     """
     Write app info to Redis cache.
@@ -126,9 +133,9 @@ def redis_write(app_id, data):
 
     # parse redis config and connect
     rds = redis.Redis(
-        host=os.environ['REDIS_HOST'],
-        port=os.environ['REDIS_PORT'],
-        password=os.environ['REDIS_PASSWORD']
+        host=os.environ["REDIS_HOST"],
+        port=os.environ["REDIS_PORT"],
+        password=os.environ["REDIS_PASSWORD"],
     )
 
     # write cache data and set ttl
@@ -138,7 +145,7 @@ def redis_write(app_id, data):
 
         # insert data into cache
         rds.set(app_id, data)
-        rds.expire(app_id, os.environ['CACHE_EXPIRATION'])
+        rds.expire(app_id, os.environ["CACHE_EXPIRATION"])
 
         # return succes status
         return True
@@ -160,10 +167,10 @@ def deta_read(app_id):
     """
 
     # initialize with a project key
-    deta = Deta(os.environ['DETA_PROJECT_KEY'])
+    deta = Deta(os.environ["DETA_PROJECT_KEY"])
 
     # connect (and create) database
-    dbs = deta.Base(os.environ['DETA_BASE_NAME'])
+    dbs = deta.Base(os.environ["DETA_BASE_NAME"])
 
     try:
         # get info from cache
@@ -179,12 +186,15 @@ def deta_read(app_id):
 
     except Exception as read_error:
         # print query parse error and return empty dict
-        print("The following error occured while trying to read and decode "
-            + "from Deta cache:")
+        print(
+            "The following error occured while trying to read and decode "
+            + "from Deta cache:"
+        )
         print("> " + str(read_error))
 
         # return failed status
         return False
+
 
 def deta_write(app_id, data):
     """
@@ -192,18 +202,18 @@ def deta_write(app_id, data):
     """
 
     # initialize with a project key
-    deta = Deta(os.environ['DETA_PROJECT_KEY'])
+    deta = Deta(os.environ["DETA_PROJECT_KEY"])
 
     # connect (and create) database
-    dbs = deta.Base(os.environ['DETA_BASE_NAME'])
+    dbs = deta.Base(os.environ["DETA_BASE_NAME"])
 
     # write cache data and set ttl
     try:
         # set expiration ttl
-        expiration = int(os.environ['CACHE_EXPIRATION'])
+        expiration = int(os.environ["CACHE_EXPIRATION"])
 
         # insert data into cache
-        dbs.put({ "data" : data }, str(app_id), expire_in=expiration)
+        dbs.put({"data": data}, str(app_id), expire_in=expiration)
 
         # return succes status
         return True
