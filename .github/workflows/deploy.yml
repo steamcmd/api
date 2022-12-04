@@ -8,7 +8,7 @@ on:
 jobs:
   check-requirements:
     name: Check Requirements
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Set Version Tag
         run: echo "API_TAG=$(echo $GITHUB_REF | awk -F '/' '{print $NF}')" >> $GITHUB_ENV
@@ -17,17 +17,15 @@ jobs:
 
   deploy-image:
     name: Deploy Image
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: check-requirements
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: e1himself/goss-installation-action@v1.0.3
         with:
           version: 'v0.3.14'
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
-      - name: Store API Version
-        run: echo $API_VERSION > src/.version
       - name: Docker Login
         run: echo ${{ secrets.DOCKER_ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
       - name: Build Image
@@ -42,9 +40,9 @@ jobs:
 
   update-readme:
     name: Update Readme
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Update Docker Hub Description
         uses: peter-evans/dockerhub-description@v2
         env:
@@ -52,44 +50,40 @@ jobs:
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKERHUB_REPOSITORY: steamcmd/api
 
-  deploy-heroku:
-    name: Deploy Heroku
-    runs-on: ubuntu-18.04
-    needs: check-requirements
+  deploy-deta:
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
-      - name: Store API Version
-        run: echo $API_VERSION > src/.version
-      - uses: akhileshns/heroku-deploy@v3.2.6
+      - name: Deploy API on Deta
+        uses: HarshKapadia2/deta-deploy@v1.0.2
         with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          usedocker: true
-          docker_heroku_process_type: web
+          deta-access-token: ${{ secrets.DETA_PROJECT_KEY }}
+          deta-name: '${{ secrets.DETA_MICRO_NAME }}'
+          deta-project: '${{ secrets.DETA_PROJECT_NAME }}'
+          deta-project-dir: 'src'
 
-  deploy-caprover:
-    name: Deploy Koudijs.app
-    runs-on: ubuntu-18.04
-    needs: deploy-image
-    steps:
-      - uses: actions/checkout@v2
-      - name: Parse API Version
-        run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
-      - name: Deploy to Caprover app
-        uses: mrfreasy/action-caprover@v2
+      - name: Prepare environment file
+        run: |
+          cat > src/.env<< EOF
+          # general
+          VERSION=${{ env.API_VERSION }}
+
+          # caching
+          CACHE=True
+          CACHE_TYPE=deta
+          CACHE_EXPIRATION=120
+
+          # deta
+          DETA_BASE_NAME="${{ secrets.DETA_BASE_NAME }}"
+          DETA_PROJECT_KEY="${{ secrets.DETA_PROJECT_KEY }}"
+
+          EOF
+      - name: Update environment on Deta
+        uses: jhihyulin/deta-update-env-action@v1.0.0
         with:
-          app: '${{ secrets.CAPROVER_APP }}'
-          host: '${{ secrets.CAPROVER_URL }}'
-          token: '${{ secrets.CAPROVER_APP_TOKEN }}'
-          image: 'steamcmd/api:${{ env.API_VERSION }}'
-
-  warmup-api:
-    name: Warmup API
-    runs-on: ubuntu-18.04
-    needs: deploy-caprover
-    steps:
-      - name: Call SteamCMD API
-        run: curl --connect-timeout 120 --max-time 120 https://api.steamcmd.net/v1/info/1
+          deta-access-token: '${{ secrets.DETA_PROJECT_KEY }}'
+          deta-name: '${{ secrets.DETA_MICRO_NAME }}'
+          deta-project: '${{ secrets.DETA_PROJECT_NAME }}'
+          deta-project-dir: 'src'
