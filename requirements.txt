@@ -1,4 +1,9 @@
-gunicorn
+fastapi
 redis
+deta
+
+python-dotenv
 semver
-setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+
+steam[client]
+gevent

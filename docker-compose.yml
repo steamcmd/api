@@ -2,17 +2,16 @@ version: '3'
 services:
   web:
     build: .
+    command: ["--port", "$PORT", "main:app", "--reload"]
     ports:
-      - "8080:8080"
+      - "8000:8000"
     volumes:
       - ./src:/data
     environment:
-      PORT: 8080
+      PORT: 8000
       WORKERS: 4
-      THREADS: 1
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      GUNICORN_CMD_ARGS: "--reload"
       PYTHONUNBUFFERED: "TRUE"
     restart: always
   redis:
