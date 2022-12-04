@@ -1,17 +1,17 @@
 ---
 process:
-  gunicorn:
+  uvicorn:
     # required attributes
     running: true
     # optional attributes
     skip: false
 
 http:
-  http://127.0.0.1:8080/v1/info/740:
+  http://127.0.0.1:8000/v1/info/740:
     # required attributes
     status: 200
     # optional attributes
     allow-insecure: true
     no-follow-redirects: false # setting this to true will NOT follow redirects
-    timeout: 60000 # timeout of 1 minute
+    timeout: 10000 # timeout of 10 seconds
     skip: false

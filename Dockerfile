@@ -30,8 +30,5 @@ COPY --chown=$USER:$USER src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
-#ENTRYPOINT [""]
-#CMD uvicorn --workers $WORKERS --port $PORT main:app
-
 ENTRYPOINT [""]
 CMD uvicorn --host 0.0.0.0 --port $PORT --workers $WORKERS main:app
