@@ -85,7 +85,7 @@ jobs:
       - name: Update environment on Deta
         uses: jhihyulin/deta-update-env-action@v1.0.0
         with:
-          deta-access-token: '${{ secrets.DETA_PROJECT_KEY }}'
+          deta-access-token: '${{ secrets.DETA_ACCESS_TOKEN }}'
           deta-name: '${{ secrets.DETA_MICRO_NAME }}'
           deta-project: '${{ secrets.DETA_PROJECT_NAME }}'
           deta-project-dir: 'src'
