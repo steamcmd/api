@@ -51,6 +51,7 @@ jobs:
           DOCKERHUB_REPOSITORY: steamcmd/api
 
   deploy-deta:
+    name: Deploy Deta
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -61,7 +62,7 @@ jobs:
       - name: Deploy API on Deta
         uses: HarshKapadia2/deta-deploy@v1.0.2
         with:
-          deta-access-token: ${{ secrets.DETA_PROJECT_KEY }}
+          deta-access-token: ${{ secrets.DETA_ACCESS_TOKEN }}
           deta-name: '${{ secrets.DETA_MICRO_NAME }}'
           deta-project: '${{ secrets.DETA_PROJECT_NAME }}'
           deta-project-dir: 'src'
