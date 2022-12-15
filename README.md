@@ -46,11 +46,11 @@ heroku container:release web --app yourappname
 
 Run the api locally by installing a web server like uvicorn and running it:
 ```
-cd src/
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 pip install uvicorn
+cd src/
 uvicorn main:app --reload
 ```
 
