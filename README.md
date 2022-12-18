@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/github/workflow/status/steamcmd/api/Deploy.svg?logo=github)](https://github.com/steamcmd/api/actions)
+[![Build Status](https://github.com/steamcmd/api/actions/workflows/deploy.yml/badge.svg)](https://github.com/steamcmd/api/actions)
 [![Snyk Vulnerabilities](https://snyk.io/test/github/steamcmd/api/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/steamcmd/api)
 [![CodeFactor](https://www.codefactor.io/repository/github/steamcmd/api/badge)](https://www.codefactor.io/repository/github/steamcmd/api)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
