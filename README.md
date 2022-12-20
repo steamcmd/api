@@ -1,5 +1,4 @@
 [![Build Status](https://github.com/steamcmd/api/actions/workflows/deploy.yml/badge.svg)](https://github.com/steamcmd/api/actions)
-[![Snyk Vulnerabilities](https://snyk.io/test/github/steamcmd/api/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/steamcmd/api)
 [![CodeFactor](https://www.codefactor.io/repository/github/steamcmd/api/badge)](https://www.codefactor.io/repository/github/steamcmd/api)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![Discord Online](https://img.shields.io/discord/928592378711912488.svg)](https://discord.steamcmd.net)
@@ -11,38 +10,77 @@
 
 # SteamCMD API
 
-Read-only API interface for steamcmd app_info
+Read-only API interface for steamcmd app_info. Updates of the API are
+automatically deployed on Deta via [Github Actions](https://github.com/steamcmd/api/actions)
+when a new version has been created on Github.
 
-### Container
+## Self-hosting
 
-The API is run via a Docker image which contains both the `steamcmd` binary and
-the Python code which is wrapped around it. You can build and run the container
-(locally) with Docker:
+The easiest way to host the API yourself is using the free cloud platform
+[Deta](https://www.deta.sh). Install the CLI according to the documentation:
+[https://docs.deta.sh/docs/cli/install](https://docs.deta.sh/docs/cli/install).
+
+After installing authenticate locally with the `deta` cli:
 ```
-docker build -t steamcmd-api:test .
-docker run -p 8080:8080 -d steamcmd-api:test
-```
-However during development, using Docker Compose is preferred.
-See the [Development](#development) section for information.
-
-### Hosting
-
-Newer versions of the API are automatically deployed on Deta when a new version
-has been created on Github, see the [deploy workflow](.github/workflows/deploy.yml).
-Deployment is done via [Github Actions](https://github.com/steamcmd/api/actions).
-
-Deploying to Deta can be done to easily host it yourself. First authenticate
-locally with the `heroku` cli:
-```
-heroku container:login
+deta login
 ```
 Then use the following deployment commands:
 ```
-heroku container:push web --app yourappname
+cd src/
+deta deploy
 heroku container:release web --app yourappname
 ```
 
-### Development
+## Container
+
+The API can easily be run via a Docker image which contains the API code and the
+`uvicorn` tool to be able to respond to web requests. With every new version of
+the API the Docker images is automatically rebuild and pushed to the Docker Hub:
+```
+docker pull steamcmd/api:latest
+```
+```
+docker pull steamcmd/api:1.10.0
+```
+```
+docker run -p 8000:8000 -d steamcmd/api:latest
+```
+However during development, using Docker Compose is preferred. See the
+[Development](#development) section for information.
+
+## Configuration
+
+When hosting the API yourself there are few settings you can change to configure
+the API to your platform specifications. The easiest way is to create an `.env`
+file in the `src/` directory. Alternatively setting environment variables is
+possible as well.
+
+All the settings are optional. Keep in mind that when you choose a cache type
+that you will need to set the corresponding cache settings for that type as well
+(ex.: `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` is required when using the
+**redis** type).
+
+All the available options in an `.env` file:
+```
+# general
+VERSION=1.0.0
+
+# caching
+CACHE=True
+CACHE_TYPE=deta
+CACHE_EXPIRATION=120
+
+# redis
+REDIS_HOST="your.redis.host.example.com"
+REDIS_PORT=18516
+REDIS_PASSWORD="YourRedisP@ssword!"
+
+# deta
+DETA_BASE_NAME="steamcmd"
+DETA_PROJECT_KEY="YourDet@ProjectKey!"
+```
+
+## Development
 
 Run the api locally by installing a web server like uvicorn and running it:
 ```
@@ -61,7 +99,9 @@ repository in the WSL filesystem or it will fail. Execute compose up in the root
 ```
 docker compose up
 ```
-Now you can reach the SteamCMD API locally on [http://localhost:8080](http://localhost:8080)
+Now you can reach the SteamCMD API locally on [http://localhost:8080](http://localhost:8080).
+
+### Black
 
 To keep things simple, [Black](https://github.com/python/black) is used for code
 style / formatting. Part of the pipeline will check if the code is properly

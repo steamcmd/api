@@ -7,7 +7,6 @@ ENV HOME /data
 
 ENV PORT 8000
 ENV WORKERS 4
-ENV TIMEOUT 120
 
 ################## BEGIN INSTALLATION ######################
 
