@@ -21,9 +21,6 @@ jobs:
     needs: check-requirements
     steps:
       - uses: actions/checkout@v3
-      - uses: e1himself/goss-installation-action@v1.0.3
-        with:
-          version: 'v0.3.14'
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
       - name: Docker Login
@@ -51,6 +48,7 @@ jobs:
   deploy-deta:
     name: Deploy Deta
     runs-on: ubuntu-20.04
+    needs: check-requirements
     steps:
       - uses: actions/checkout@v3
       - name: Parse API Version
