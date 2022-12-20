@@ -24,11 +24,10 @@ After installing authenticate locally with the `deta` cli:
 ```
 deta login
 ```
-Then use the following deployment commands:
+Then use the deploy command:
 ```
 cd src/
 deta deploy
-heroku container:release web --app yourappname
 ```
 
 ## Container
