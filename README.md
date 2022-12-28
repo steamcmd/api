@@ -4,9 +4,9 @@
 [![Discord Online](https://img.shields.io/discord/928592378711912488.svg)](https://discord.steamcmd.net)
 [![Service status](https://img.shields.io/uptimerobot/status/m782827237-5067fd1d69e3b1b2e4e40fff)](https://status.steamcmd.net)
 [![Image Size](https://img.shields.io/docker/image-size/steamcmd/api/latest.svg)](https://hub.docker.com/r/steamcmd/api)
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/steamcmd/api?label=version)](https://github.com/steamcmd/api/releases)
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/jonakoudijs)](https://github.com/sponsors/jonakoudijs)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/steamcmd)](https://github.com/sponsors/steamcmd)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 # SteamCMD API
 
