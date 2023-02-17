@@ -126,7 +126,7 @@ in the root:
 ```bash
 docker compose up
 ```
-Now you can reach the SteamCMD API locally on [http://localhost:8080](http://localhost:8080).
+Now you can reach the SteamCMD API locally on [http://localhost:8000](http://localhost:8000).
 
 ### Black
 
