@@ -51,8 +51,10 @@ jobs:
     needs: [check-requirements, build-image]
     steps:
       - uses: actions/checkout@v3
-      - uses: unionai-oss/flytectl-setup-action@master
+      - uses: jmoll/setup-flyctl@1.1.1
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
       - name: Deploy API on Fly.io
         run: flyctl deploy --app steamcmd --image steamcmd/api:${{ env.API_VERSION }} -e VERSION=${{ env.API_VERSION }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_ACCESS_TOKEN }}
