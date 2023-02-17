@@ -55,4 +55,4 @@ jobs:
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
       - name: Deploy API on Fly.io
-        run: fly deploy --app steamcmd --image steamcmd/api:${{ env.API_VERSION }} -e VERSION=${{ env.API_VERSION }}
+        run: flyctl deploy --app steamcmd --image steamcmd/api:${{ env.API_VERSION }} -e VERSION=${{ env.API_VERSION }}
