@@ -45,43 +45,14 @@ jobs:
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
           DOCKERHUB_REPOSITORY: steamcmd/api
 
-  deploy-deta:
-    name: Deploy Deta
+  deploy-fly:
+    name: Deploy Fly.io
     runs-on: ubuntu-20.04
-    needs: check-requirements
+    needs: [check-requirements, build-image]
     steps:
       - uses: actions/checkout@v3
+      - uses: unionai-oss/flytectl-setup-action@master
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
-      - name: Copy requirements file to source dir
-        run: cp requirements.txt src/
-      - name: Deploy API on Deta
-        uses: HarshKapadia2/deta-deploy@v1.0.2
-        with:
-          deta-access-token: ${{ secrets.DETA_ACCESS_TOKEN }}
-          deta-name: '${{ secrets.DETA_MICRO_NAME }}'
-          deta-project: '${{ secrets.DETA_PROJECT_NAME }}'
-          deta-project-dir: 'src'
-      - name: Prepare environment file
-        run: |
-          cat > src/.env<< EOF
-          # general
-          VERSION=${{ env.API_VERSION }}
-
-          # caching
-          CACHE=True
-          CACHE_TYPE=deta
-          CACHE_EXPIRATION=120
-
-          # deta
-          DETA_BASE_NAME="${{ secrets.DETA_BASE_NAME }}"
-          DETA_PROJECT_KEY="${{ secrets.DETA_PROJECT_KEY }}"
-
-          EOF
-      - name: Update environment on Deta
-        uses: jhihyulin/deta-update-env-action@v1.0.0
-        with:
-          deta-access-token: '${{ secrets.DETA_ACCESS_TOKEN }}'
-          deta-name: '${{ secrets.DETA_MICRO_NAME }}'
-          deta-project: '${{ secrets.DETA_PROJECT_NAME }}'
-          deta-project-dir: 'src'
+      - name: Deploy API on Fly.io
+        run: fly deploy --app steamcmd --image steamcmd/api:${{ env.API_VERSION }} -e VERSION=${{ env.API_VERSION }}

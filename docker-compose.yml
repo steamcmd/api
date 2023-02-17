@@ -10,6 +10,10 @@ services:
     environment:
       PORT: 8000
       WORKERS: 4
+      VERSION: 9.9.9
+      CACHE: True
+      CACHE_TYPE: redis
+      CACHE_EXPIRATION: 120
       REDIS_HOST: redis
       REDIS_PORT: 6379
       PYTHONUNBUFFERED: "TRUE"

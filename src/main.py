@@ -17,6 +17,7 @@ load_dotenv()
 # initialise app
 app = FastAPI()
 
+
 # include "pretty" for backwards compatibility
 class PrettyJSONResponse(Response):
     media_type = "application/json"
@@ -34,7 +35,6 @@ class PrettyJSONResponse(Response):
 
 @app.get("/v1/info/{app_id}", response_class=PrettyJSONResponse)
 def read_app(app_id: int, pretty: bool = False):
-
     if "CACHE" in os.environ and os.environ["CACHE"]:
         info = cache_read(app_id)
 
