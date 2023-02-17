@@ -16,7 +16,6 @@ def app_info(app_id):
     try:
         # Sometimes it hangs for 30+ seconds. Normal connection takes about 500ms
         for _ in range(connect_retries):
-
             count = _ + 1
             count = str(count)
 

@@ -1,5 +1,5 @@
 # Set the base image steamcmd
-FROM python:3.9
+FROM python:3.10
 
 # Set environment variables
 ENV USER steamcmd
@@ -29,5 +29,4 @@ COPY --chown=$USER:$USER src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
-ENTRYPOINT [""]
 CMD uvicorn --host 0.0.0.0 --port $PORT --workers $WORKERS main:app
