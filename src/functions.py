@@ -83,18 +83,30 @@ def cache_write(app_id, data):
     # return failed status
     return False
 
+def redis_connection():
+    """
+    Parse redis config and connect.
+    """
+
+    # try connection string, or default to separate REDIS_* env vars
+    if "REDIS_URL" in os.environ:
+        rds = redis.Redis.from_url(os.environ["REDIS_URL"])
+    else:
+        rds = redis.Redis(
+            host=os.environ["REDIS_HOST"],
+            port=os.environ["REDIS_PORT"],
+            password=os.environ["REDIS_PASSWORD"],
+        )
+
+    # return connection
+    return rds
 
 def redis_read(app_id):
     """
     Read app info from Redis cache.
     """
 
-    # parse redis config and connect
-    rds = redis.Redis(
-        host=os.environ["REDIS_HOST"],
-        port=os.environ["REDIS_PORT"],
-        password=os.environ["REDIS_PASSWORD"],
-    )
+    rds = redis_connection()
 
     try:
         # get info from cache
@@ -130,13 +142,8 @@ def redis_write(app_id, data):
     Write app info to Redis cache.
     """
 
-    # parse redis config and connect
-    rds = redis.Redis(
-        host=os.environ["REDIS_HOST"],
-        port=os.environ["REDIS_PORT"],
-        password=os.environ["REDIS_PASSWORD"],
-    )
-
+    rds = redis_connection()
+    
     # write cache data and set ttl
     try:
         # convert dict to json
