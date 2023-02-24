@@ -6,6 +6,7 @@ Main application and entrypoint.
 from deta import Deta
 from typing import Union
 from fastapi import FastAPI, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 from functions import app_info, cache_read, cache_write
 import os, datetime, json, semver, typing
 
@@ -17,6 +18,15 @@ load_dotenv()
 # initialise app
 app = FastAPI()
 
+origins = [x for x in os.environ.get("ALLOWED_HOSTS", "http://localhost").split(',')]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # include "pretty" for backwards compatibility
 class PrettyJSONResponse(Response):
