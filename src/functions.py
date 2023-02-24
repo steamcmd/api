@@ -90,11 +90,15 @@ def redis_read(app_id):
     """
 
     # parse redis config and connect
-    rds = redis.Redis(
-        host=os.environ["REDIS_HOST"],
-        port=os.environ["REDIS_PORT"],
-        password=os.environ["REDIS_PASSWORD"],
-    )
+    # try connection string, or default to separate REDIS_* env vars
+    if "REDIS_URL" in os.environ:
+        rds = redis.Redis.from_url(os.environ["REDIS_URL"])
+    else:
+        rds = redis.Redis(
+            host=os.environ["REDIS_HOST"],
+            port=os.environ["REDIS_PORT"],
+            password=os.environ["REDIS_PASSWORD"],
+        )
 
     try:
         # get info from cache

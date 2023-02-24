@@ -101,6 +101,9 @@ REDIS_HOST="your.redis.host.example.com"
 REDIS_PORT=6379
 REDIS_PASSWORD="YourRedisP@ssword!"
 
+# OR, if your host provides a [Connection URL](https://redis-py.readthedocs.io/en/stable/#quickly-connecting-to-redis)
+REDIS_URL="redis://YourUsername:YourRedisP@ssword!@your.redis.host.example.com:6379"
+
 # deta
 DETA_BASE_NAME="steamcmd"
 DETA_PROJECT_KEY="YourDet@ProjectKey!"
