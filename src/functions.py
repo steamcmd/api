@@ -83,6 +83,7 @@ def cache_write(app_id, data):
     # return failed status
     return False
 
+
 def redis_connection():
     """
     Parse redis config and connect.
@@ -100,6 +101,7 @@ def redis_connection():
 
     # return connection
     return rds
+
 
 def redis_read(app_id):
     """
@@ -143,7 +145,7 @@ def redis_write(app_id, data):
     """
 
     rds = redis_connection()
-    
+
     # write cache data and set ttl
     try:
         # convert dict to json
