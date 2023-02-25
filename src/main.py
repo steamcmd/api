@@ -18,7 +18,7 @@ load_dotenv()
 # initialise app
 app = FastAPI()
 
-origins = [x for x in os.environ.get("ALLOWED_HOSTS", "http://localhost").split(',')]
+origins = [x for x in os.environ.get("ALLOWED_HOSTS", "http://localhost").split(",")]
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,6 +27,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # include "pretty" for backwards compatibility
 class PrettyJSONResponse(Response):
