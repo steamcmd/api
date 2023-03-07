@@ -3,6 +3,7 @@
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![Discord Online](https://img.shields.io/discord/928592378711912488.svg)](https://discord.steamcmd.net)
 [![Image Size](https://img.shields.io/docker/image-size/steamcmd/api/latest.svg)](https://hub.docker.com/r/steamcmd/api)
+[![Better Uptime](https://betteruptime.com/status-badges/v1/monitor/ln3p.svg)](https://status.steamcmd.net)
 [![GitHub Release](https://img.shields.io/github/v/release/steamcmd/api?label=version)](https://github.com/steamcmd/api/releases)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/steamcmd)](https://github.com/sponsors/steamcmd)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
