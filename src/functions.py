@@ -1,11 +1,15 @@
 """
 General Functions
 """
+from gevent import monkey; monkey.patch_all()
 
 # import modules
 import os, json, gevent, datetime, redis
+import requests
 from steam.client import SteamClient
 from deta import Deta
+
+# setup gevent to use requests
 
 
 def app_info(app_id):
@@ -50,15 +54,123 @@ def app_info(app_id):
         print(err)
 
 
-def cache_read(app_id):
+def tag_info(tag_ids):
+    """
+    Fetch tag information from cache or steam api
+    """
+
+    response_tags = []
+
+    # check if tag ids are in cache
+    for tag_id in tag_ids:
+        tag = cache_read("tag-{}".format(tag_id))
+
+        if tag:
+            response_tags.append(tag)
+            tag_ids.remove(tag_id)
+
+    # if all tags are in cache return them
+    if not tag_ids:
+        return response_tags
+    
+
+    # Fetch tag information from steam api
+    params = {
+        "language": "english",
+    }
+
+    # add tag ids to params in format of tagids[0]=1&tagids[1]=2, etc
+    for i, tag_id in enumerate(tag_ids):
+        params["tagids[" + str(i) + "]"] = tag_id   
+
+    if "STEAM_API_KEY" in os.environ:
+        params["key"] = os.environ["STEAM_API_KEY"]
+
+    url = "https://api.steampowered.com/IStoreService/GetLocalizedNameForTags/v1/"
+
+    # fetch tag information from steam api
+    try:
+        r = requests.get(url, params=params)
+        r.raise_for_status()
+
+        # save each tag to the cache
+        for tag in r.json()["response"]["tags"]:
+            cache_write("tag-{}".format(tag["tagid"]), tag)
+            response_tags.append(tag)
+        
+    
+    except Exception as err:
+        print("Error while fetching tag info for tag ids: " + ",".join(tag_ids))
+        print(err)
+        return False
+
+    # return tags
+    return response_tags
+
+
+
+
+    
+
+def category_info(category_ids):
+    # check if category ids are in cache
+    response_categories = []
+
+    for category_id in category_ids:
+        category = cache_read("category-{}".format(category_id))
+
+        if category:
+            response_categories.append(category)
+            category_ids.remove(category_id)
+
+    # if all categories are in cache return them
+    if not category_ids:
+        return response_categories
+    
+
+    # Fetch category information from steam api
+    params = {
+        "language": "english",
+    }
+
+    # fetch category info from steam api
+    if "STEAM_API_KEY" in os.environ:
+        params["key"] = os.environ["STEAM_API_KEY"]
+
+    url = "https://api.steampowered.com/IStoreBrowseService/GetStoreCategories/v1/"
+
+    # fetch category information from steam api
+    try:
+        r = requests.get(url, params=params)
+        r.raise_for_status()
+
+        # save each category to the cache
+        for category in r.json()["response"]["categories"]:
+            cache_write("category-{}".format(category["id"]), category)
+            response_categories.append(category)
+
+    except Exception as err:
+        print("Error while fetching category info for category ids: " + ",".join(category_ids))
+        print(err)
+        return False
+
+    # return categories
+    return response_categories
+
+
+
+
+
+
+def cache_read(cache_id):
     """
     Read app info from chosen cache.
     """
 
     if os.environ["CACHE_TYPE"] == "redis":
-        return redis_read(app_id)
+        return redis_read(cache_id)
     elif os.environ["CACHE_TYPE"] == "deta":
-        return deta_read(app_id)
+        return deta_read(cache_id)
     else:
         # print query parse error and return empty dict
         print("Incorrect set cache type: " + os.environ["CACHE_TYPE"])
@@ -67,15 +179,15 @@ def cache_read(app_id):
     return False
 
 
-def cache_write(app_id, data):
+def cache_write(cache_id, data):
     """
     write app info to chosen cache.
     """
 
     if os.environ["CACHE_TYPE"] == "redis":
-        return redis_write(app_id, data)
+        return redis_write(cache_id, data)
     elif os.environ["CACHE_TYPE"] == "deta":
-        return deta_write(app_id, data)
+        return deta_write(cache_id, data)
     else:
         # print query parse error and return empty dict
         print("Incorrect set cache type: " + os.environ["CACHE_TYPE"])
@@ -103,7 +215,7 @@ def redis_connection():
     return rds
 
 
-def redis_read(app_id):
+def redis_read(cache_key):
     """
     Read app info from Redis cache.
     """
@@ -112,7 +224,7 @@ def redis_read(app_id):
 
     try:
         # get info from cache
-        data = rds.get(app_id)
+        data = rds.get(cache_key)
 
         # return if not found
         if not data:
@@ -139,7 +251,7 @@ def redis_read(app_id):
         return False
 
 
-def redis_write(app_id, data):
+def redis_write(cache_key, data):
     """
     Write app info to Redis cache.
     """
@@ -152,8 +264,8 @@ def redis_write(app_id, data):
         data = json.dumps(data)
 
         # insert data into cache
-        rds.set(app_id, data)
-        rds.expire(app_id, os.environ["CACHE_EXPIRATION"])
+        rds.set(cache_key, data)
+        rds.expire(cache_key, os.environ["CACHE_EXPIRATION"])
 
         # return succes status
         return True
