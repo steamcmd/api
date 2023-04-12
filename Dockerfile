@@ -6,13 +6,13 @@ ENV USER steamcmd
 ENV HOME /data
 
 ENV PORT 8000
-ENV WORKERS 4
+ENV WORKERS 2
 
 ################## BEGIN INSTALLATION ######################
 
 # Install Python requirements
 COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install --no-cache-dir uvicorn \
+RUN pip3 install --no-cache-dir "uvicorn[standard]" gunicorn \
  && pip3 install --no-cache-dir -r /tmp/requirements.txt \
  && rm /tmp/requirements.txt
 
@@ -29,4 +29,4 @@ COPY --chown=$USER:$USER src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
-CMD uvicorn --host 0.0.0.0 --port $PORT --workers $WORKERS main:app
+CMD gunicorn main:app --max-requests 5000 --max-requests-jitter 200 --workers $WORKERS --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
