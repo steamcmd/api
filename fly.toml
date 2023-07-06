@@ -30,6 +30,9 @@ processes = []
     handlers = ["tls", "http"]
     port = 443
 
+    [services.ports.http_options.response.headers]
+      Access-Control-Allow-Origin = "*"
+
   [[services.tcp_checks]]
     grace_period = "1s"
     interval = "15s"
