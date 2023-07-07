@@ -3,6 +3,9 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
 
+[build]
+  image = "steamcmd/api:production"
+
 [env]
   PORT = "8000"
 
