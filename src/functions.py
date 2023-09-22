@@ -96,13 +96,10 @@ def redis_connection():
         rds = redis.Redis(
             host=os.environ["REDIS_HOST"],
             port=os.environ["REDIS_PORT"],
-            password=os.environ["REDIS_PASSWORD"]
+            password=os.environ["REDIS_PASSWORD"],
         )
     else:
-        rds = redis.Redis(
-            host=os.environ["REDIS_HOST"],
-            port=os.environ["REDIS_PORT"]
-        )
+        rds = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
 
     # return connection
     return rds
