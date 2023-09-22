@@ -92,11 +92,16 @@ def redis_connection():
     # try connection string, or default to separate REDIS_* env vars
     if "REDIS_URL" in os.environ:
         rds = redis.Redis.from_url(os.environ["REDIS_URL"])
-    else:
+    elif "REDIS_PASSWORD" in os.environ:
         rds = redis.Redis(
             host=os.environ["REDIS_HOST"],
             port=os.environ["REDIS_PORT"],
-            password=os.environ["REDIS_PASSWORD"],
+            password=os.environ["REDIS_PASSWORD"]
+        )
+    else:
+        rds = redis.Redis(
+            host=os.environ["REDIS_HOST"],
+            port=os.environ["REDIS_PORT"]
         )
 
     # return connection
@@ -152,8 +157,8 @@ def redis_write(app_id, data):
         data = json.dumps(data)
 
         # insert data into cache
-        rds.set(app_id, data)
-        rds.expire(app_id, os.environ["CACHE_EXPIRATION"])
+        expiration = int(os.environ["CACHE_EXPIRATION"])
+        rds.set(app_id, data, ex=expiration)
 
         # return succes status
         return True

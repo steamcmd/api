@@ -2,7 +2,7 @@ version: '3'
 services:
   web:
     build: .
-    command: ["--port", "$PORT", "main:app", "--reload"]
+    command: "gunicorn main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --reload"
     ports:
       - "8000:8000"
     volumes:
