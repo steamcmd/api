@@ -4,10 +4,11 @@ kill_timeout = 5
 processes = []
 
 [build]
-  image = "steamcmd/api:production"
+  image = "steamcmd/api:latest"
 
 [env]
   PORT = "8000"
+  WORKERS = "1"
 
 [experimental]
   auto_rollback = true
