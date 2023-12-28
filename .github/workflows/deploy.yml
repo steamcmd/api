@@ -8,7 +8,7 @@ on:
 jobs:
   check-requirements:
     name: Check Requirements
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Set Version Tag
         run: echo "API_TAG=$(echo $GITHUB_REF | awk -F '/' '{print $NF}')" >> $GITHUB_ENV
@@ -17,7 +17,7 @@ jobs:
 
   build-image:
     name: Build Image
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: check-requirements
     steps:
       - uses: actions/checkout@v3
@@ -35,7 +35,7 @@ jobs:
 
   update-readme:
     name: Update Readme
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - name: Update Docker Hub Description
@@ -47,7 +47,7 @@ jobs:
 
   deploy-fly:
     name: Deploy Fly.io
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [check-requirements, build-image]
     steps:
       - uses: actions/checkout@v3
@@ -58,3 +58,14 @@ jobs:
         run: flyctl deploy --app steamcmd --image steamcmd/api:${{ env.API_VERSION }} -e VERSION=${{ env.API_VERSION }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_ACCESS_TOKEN }}
+
+  deploy-render:
+    name: Deploy Render.com
+    runs-on: ubuntu-22.04
+    needs: [check-requirements, build-image]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Parse API Version
+        run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
+      - name: Deploy API on Render.com
+        run: curl https://api.render.com/deploy/${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}&imgURL=docker.io%2Fsteamcmd%2Fapi%40${{ env.API_VERSION }}

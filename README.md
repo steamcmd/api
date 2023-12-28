@@ -11,7 +11,7 @@
 # SteamCMD API
 
 Read-only API interface for steamcmd app_info. Updates of this code are
-automatically deployed on Fly.io via [Github Actions](https://github.com/steamcmd/api/actions)
+automatically deployed via [Github Actions](https://github.com/steamcmd/api/actions)
 when a new version has been created on Github.
 
 ## Self-hosting
