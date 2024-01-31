@@ -29,4 +29,4 @@ COPY --chown=$USER:$USER src/ $HOME/
 ##################### INSTALLATION END #####################
 
 # Set default container command
-CMD gunicorn main:app --max-requests 3000 --max-requests-jitter 150 --workers $WORKERS --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+CMD exec gunicorn main:app --max-requests 3000 --max-requests-jitter 150 --workers $WORKERS --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
