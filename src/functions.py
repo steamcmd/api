@@ -23,7 +23,10 @@ def app_info(app_id):
 
             try:
                 with gevent.Timeout(connect_timeout):
-                    logging.info("Retrieving app info from steamclient", extra={"app_id": app_id, "retry_count": count})
+                    logging.info(
+                        "Retrieving app info from steamclient",
+                        extra={"app_id": app_id, "retry_count": count},
+                    )
 
                     logging.debug("Connecting via steamclient to steam api")
                     client = SteamClient()
@@ -36,19 +39,25 @@ def app_info(app_id):
                     return info
 
             except gevent.timeout.Timeout:
-                logging.warning("Encountered timeout when trying to connect to steam api. Retrying..")
+                logging.warning(
+                    "Encountered timeout when trying to connect to steam api. Retrying.."
+                )
                 client._connecting = False
 
             else:
                 logging.info("Succesfully retrieved app info", extra={"app_id": app_id})
                 break
         else:
-            logging.error("Max connect retries exceeded", extra={"connect_retries": connect_retries})
+            logging.error(
+                "Max connect retries exceeded",
+                extra={"connect_retries": connect_retries},
+            )
             raise Exception(f"Max connect retries ({connect_retries}) exceeded")
 
     except Exception as err:
         logging.error("Failed in retrieving app info", extra={"app_id": app_id})
         logging.error(err, extra={"app_id": app_id})
+
 
 def cache_read(app_id):
     """
@@ -61,7 +70,10 @@ def cache_read(app_id):
         return deta_read(app_id)
     else:
         # print query parse error and return empty dict
-        logging.error("Set incorrect cache type", extra={"app_id": app_id, "cache_type": os.environ["CACHE_TYPE"]})
+        logging.error(
+            "Set incorrect cache type",
+            extra={"app_id": app_id, "cache_type": os.environ["CACHE_TYPE"]},
+        )
 
     # return failed status
     return False
@@ -78,7 +90,10 @@ def cache_write(app_id, data):
         return deta_write(app_id, data)
     else:
         # print query parse error and return empty dict
-        logging.error("Set incorrect cache type", extra={"app_id": app_id, "cache_type": os.environ["CACHE_TYPE"]})
+        logging.error(
+            "Set incorrect cache type",
+            extra={"app_id": app_id, "cache_type": os.environ["CACHE_TYPE"]},
+        )
 
     # return failed status
     return False
@@ -132,7 +147,10 @@ def redis_read(app_id):
 
     except Exception as redis_error:
         # print query parse error and return empty dict
-        logging.error("An error occured while trying to read and decode from Redis cache", extra={"app_id": app_id, "error_msg": redis_error})
+        logging.error(
+            "An error occured while trying to read and decode from Redis cache",
+            extra={"app_id": app_id, "error_msg": redis_error},
+        )
 
         # return failed status
         return False
@@ -159,7 +177,10 @@ def redis_write(app_id, data):
 
     except Exception as redis_error:
         # print query parse error and return empty dict
-        logging.error("An error occured while trying to write to Redis cache", extra={"app_id": app_id, "error_msg": redis_error})
+        logging.error(
+            "An error occured while trying to write to Redis cache",
+            extra={"app_id": app_id, "error_msg": redis_error},
+        )
 
     # return fail status
     return False
