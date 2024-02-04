@@ -2,8 +2,9 @@ fastapi
 redis
 deta
 
-python-dotenv
 semver
+python-dotenv
+logfmter
 
 steam[client]
 gevent

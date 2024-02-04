@@ -16,6 +16,7 @@ services:
       CACHE_EXPIRATION: 120
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      LOG_LEVEL: info
       PYTHONUNBUFFERED: "TRUE"
     restart: always
   redis:
