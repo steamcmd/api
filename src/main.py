@@ -58,7 +58,7 @@ def read_app(app_id: int, pretty: bool = False):
             cache_write(app_id, info)
         else:
             logging.info(
-                "App info was succesfully retrieved from cache",
+                "App info succesfully retrieved from cache",
                 extra={"app_id": app_id},
             )
 
