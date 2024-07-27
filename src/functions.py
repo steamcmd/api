@@ -6,7 +6,6 @@ General Functions
 import os
 import json
 import gevent
-import datetime
 import redis
 import logging
 from steam.client import SteamClient
