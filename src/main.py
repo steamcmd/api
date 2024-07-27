@@ -3,11 +3,13 @@ Main application and entrypoint.
 """
 
 # import modules
-from deta import Deta
-from typing import Union
-from fastapi import FastAPI, Response, status
+import os
+import json
+import semver
+import typing
+import logging
+from fastapi import FastAPI, Response
 from functions import app_info, cache_read, cache_write, log_level
-import os, datetime, json, semver, typing, logging, logfmter
 from logfmter import Logfmter
 
 # load configuration
@@ -65,7 +67,7 @@ def read_app(app_id: int, pretty: bool = False):
     else:
         info = app_info(app_id)
 
-    if info == None:
+    if info is None:
         logging.info(
             "The SteamCMD backend returned no actual data and failed",
             extra={"app_id": app_id},

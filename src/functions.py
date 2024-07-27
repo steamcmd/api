@@ -3,7 +3,12 @@ General Functions
 """
 
 # import modules
-import os, json, gevent, datetime, redis, logging
+import os
+import json
+import gevent
+import datetime
+import redis
+import logging
 from steam.client import SteamClient
 from deta import Deta
 
@@ -11,7 +16,6 @@ from deta import Deta
 def app_info(app_id):
     connect_retries = 2
     connect_timeout = 3
-    current_time = str(datetime.datetime.now())
 
     logging.info("Started requesting app info", extra={"app_id": app_id})
 
