@@ -84,8 +84,8 @@ possible as well.
 
 All the settings are optional. Keep in mind that when you choose a cache type
 that you will need to set the corresponding cache settings for that type as well
-(ex.: `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` is required when using the
-**redis** type).
+(ex.: `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` or `REDIS_URL` is required
+when using the **redis** type).
 
 All the available options in an `.env` file:
 ```
@@ -105,6 +105,9 @@ REDIS_PASSWORD="YourRedisP@ssword!"
 # OR, if your host provides a Connection URL 
 # (see: https://redis-py.readthedocs.io/en/stable/#quickly-connecting-to-redis)
 REDIS_URL="redis://YourUsername:YourRedisP@ssword!@your.redis.host.example.com:6379"
+
+# logging
+LOG_LEVEL=info
 
 # deta
 DETA_BASE_NAME="steamcmd"

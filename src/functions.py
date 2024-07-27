@@ -3,51 +3,62 @@ General Functions
 """
 
 # import modules
-import os, json, gevent, datetime, redis
+import os
+import json
+import gevent
+import redis
+import logging
 from steam.client import SteamClient
 from deta import Deta
 
 
 def app_info(app_id):
-    connect_retries = 3
-    connect_timeout = 5
-    current_time = str(datetime.datetime.now())
+    connect_retries = 2
+    connect_timeout = 3
+
+    logging.info("Started requesting app info", extra={"app_id": app_id})
 
     try:
         # Sometimes it hangs for 30+ seconds. Normal connection takes about 500ms
         for _ in range(connect_retries):
-            count = _ + 1
-            count = str(count)
+            count = str(_)
 
             try:
                 with gevent.Timeout(connect_timeout):
-                    print("Connecting via steamclient")
-                    print(
-                        "Retrieving app info for: "
-                        + str(app_id)
-                        + ", retry count: "
-                        + count
+                    logging.info(
+                        "Retrieving app info from steamclient",
+                        extra={"app_id": app_id, "retry_count": count},
                     )
 
+                    logging.debug("Connecting via steamclient to steam api")
                     client = SteamClient()
                     client.anonymous_login()
                     client.verbose_debug = False
+
+                    logging.debug("Requesting app info from steam api")
                     info = client.get_product_info(apps=[app_id], timeout=1)
 
                     return info
 
             except gevent.timeout.Timeout:
+                logging.warning(
+                    "Encountered timeout when trying to connect to steam api. Retrying.."
+                )
                 client._connecting = False
 
             else:
-                print("Succesfully retrieved app info for app id: " + str(app_id))
+                logging.info("Succesfully retrieved app info", extra={"app_id": app_id})
                 break
         else:
+            logging.error(
+                "Max connect retries exceeded",
+                extra={"connect_retries": connect_retries},
+            )
             raise Exception(f"Max connect retries ({connect_retries}) exceeded")
 
     except Exception as err:
-        print("Failed in retrieving app info for app id: " + str(app_id))
-        print(err)
+        logging.error("Failed in retrieving app info", extra={"app_id": app_id})
+        logging.error(err, extra={"app_id": app_id})
 
 
 def cache_read(app_id):
@@ -61,7 +72,10 @@ def cache_read(app_id):
         return deta_read(app_id)
     else:
         # print query parse error and return empty dict
-        print("Incorrect set cache type: " + os.environ["CACHE_TYPE"])
+        logging.error(
+            "Set incorrect cache type",
+            extra={"app_id": app_id, "cache_type": os.environ["CACHE_TYPE"]},
+        )
 
     # return failed status
     return False
@@ -78,7 +92,10 @@ def cache_write(app_id, data):
         return deta_write(app_id, data)
     else:
         # print query parse error and return empty dict
-        print("Incorrect set cache type: " + os.environ["CACHE_TYPE"])
+        logging.error(
+            "Set incorrect cache type",
+            extra={"app_id": app_id, "cache_type": os.environ["CACHE_TYPE"]},
+        )
 
     # return failed status
     return False
@@ -130,13 +147,13 @@ def redis_read(app_id):
         # return cached data
         return data
 
-    except Exception as read_error:
+    except Exception as redis_error:
         # print query parse error and return empty dict
-        print(
-            "The following error occured while trying to read and decode "
-            + "from Redis cache: \n > "
-            + str(read_error)
+        logging.error(
+            "An error occured while trying to read and decode from Redis cache",
+            extra={"app_id": app_id, "error_msg": redis_error},
         )
+
         # return failed status
         return False
 
@@ -162,13 +179,33 @@ def redis_write(app_id, data):
 
     except Exception as redis_error:
         # print query parse error and return empty dict
-        print(
-            "The following error occured while trying to write to Redis cache: \n > "
-            + str(redis_error)
+        logging.error(
+            "An error occured while trying to write to Redis cache",
+            extra={"app_id": app_id, "error_msg": redis_error},
         )
 
     # return fail status
     return False
+
+
+def log_level(level):
+    """
+    Sets lowest level to log.
+    """
+
+    match level:
+        case "debug":
+            logging.getLogger().setLevel(logging.DEBUG)
+        case "info":
+            logging.getLogger().setLevel(logging.INFO)
+        case "warning":
+            logging.getLogger().setLevel(logging.WARNING)
+        case "error":
+            logging.getLogger().setLevel(logging.ERROR)
+        case "critical":
+            logging.getLogger().setLevel(logging.CRITICAL)
+        case _:
+            logging.getLogger().setLevel(logging.WARNING)
 
 
 def deta_read(app_id):

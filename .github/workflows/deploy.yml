@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: check-requirements
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
       - name: Docker Login
@@ -37,7 +37,7 @@ jobs:
     name: Update Readme
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Update Docker Hub Description
         uses: peter-evans/dockerhub-description@v2
         env:
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [check-requirements, build-image]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [check-requirements, build-image]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
       - name: Deploy API on Render.com
