@@ -9,8 +9,8 @@ from deta import Deta
 
 
 def app_info(app_id):
-    connect_retries = 3
-    connect_timeout = 5
+    connect_retries = 2
+    connect_timeout = 3
     current_time = str(datetime.datetime.now())
 
     logging.info("Started requesting app info", extra={"app_id": app_id})
@@ -18,8 +18,7 @@ def app_info(app_id):
     try:
         # Sometimes it hangs for 30+ seconds. Normal connection takes about 500ms
         for _ in range(connect_retries):
-            count = _ + 1
-            count = str(count)
+            count = str(_)
 
             try:
                 with gevent.Timeout(connect_timeout):

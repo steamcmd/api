@@ -65,6 +65,14 @@ def read_app(app_id: int, pretty: bool = False):
     else:
         info = app_info(app_id)
 
+    if info == None:
+        logging.info(
+            "The SteamCMD backend returned no actual data and failed",
+            extra={"app_id": app_id},
+        )
+        # return empty result for not found app
+        return {"data": {app_id: {}}, "status": "failed", "pretty": pretty}
+
     if not info["apps"]:
         logging.info(
             "No app has been found at Steam but the request was succesfull",
