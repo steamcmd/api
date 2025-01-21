@@ -4,7 +4,7 @@
 [![Discord Online](https://img.shields.io/discord/928592378711912488.svg)](https://discord.steamcmd.net)
 [![Mastodon Follow](https://img.shields.io/mastodon/follow/109302774947550572?domain=https%3A%2F%2Ffosstodon.org&style=flat)](https://fosstodon.org/@steamcmd)
 [![Image Size](https://img.shields.io/docker/image-size/steamcmd/api/latest.svg)](https://hub.docker.com/r/steamcmd/api)
-[![Better Uptime](https://betteruptime.com/status-badges/v1/monitor/ln3p.svg)](https://status.steamcmd.net)
+[![Uptime Robot Uptime](https://img.shields.io/uptimerobot/ratio/m782827237-5067fd1d69e3b1b2e4e40fff)](https://status.steamcmd.net)
 [![GitHub Release](https://img.shields.io/github/v/release/steamcmd/api?label=version)](https://github.com/steamcmd/api/releases)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/steamcmd)](https://github.com/sponsors/steamcmd)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
