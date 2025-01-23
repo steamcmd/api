@@ -1,6 +1,5 @@
 ## general
 semver
-python-dotenv
 logfmter
 
 ## web

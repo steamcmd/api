@@ -1,12 +1,17 @@
+import utils.general
 import utils.helper
 import logging
+import config
+import os
+from logfmter import Logfmter
 
 # fmt: off
 
 # Set variables based on environment
+redis_url = utils.helper.read_env("REDIS_URL")
 redis_host = utils.helper.read_env("REDIS_HOST", "localhost")
 redis_port = utils.helper.read_env("REDIS_PORT", "6379")
-redis_url = "redis://" + redis_host + ":" + redis_port + "/0"
+redis_password = utils.helper.read_env("REDIS_PASSWORD")
 
 storage_type = utils.helper.read_env("STORAGE_TYPE", "local", choices=[ "local", "object" ])
 storage_directory = utils.helper.read_env("STORAGE_DIRECTORY", "data/", dependency={ "STORAGE_TYPE": "local" })
@@ -17,16 +22,16 @@ storage_object_bucket = utils.helper.read_env("STORAGE_OBJECT_BUCKET", dependenc
 storage_object_secure = utils.helper.read_env("STORAGE_OBJECT_SECURE", True)
 storage_object_region = utils.helper.read_env("STORAGE_OBJECT_REGION", False)
 
+log_level = utils.helper.read_env("LOG_LEVEL", "info", choices=[ "debug", "info", "warning", "error", "critical" ])
+
 # Set general settings
 chunk_size = 10
 
-# logging configuration
+# Logging configuration
 formatter = Logfmter(keys=["level"], mapping={"level": "levelname"})
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
-logging.basicConfig(handlers=[handler])
-if "LOG_LEVEL" in os.environ:
-    log_level(os.environ["LOG_LEVEL"])
+logging.basicConfig(handlers=[handler], level=utils.general.log_level(config.log_level))
 
 # Set Celery configuration
 timezone = "UTC"
@@ -46,7 +51,6 @@ beat_schedule = {
         "schedule": 3600.0,
     },
 }
-
 worker_concurrency = 4
 
 # Dynamically import all tasks files

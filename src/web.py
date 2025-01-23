@@ -10,26 +10,10 @@ import semver
 import typing
 import logging
 from fastapi import FastAPI, Response
-from functions import app_info, cache_read, cache_write, log_level
-from logfmter import Logfmter
-
-# load configuration
-from dotenv import load_dotenv
-
-load_dotenv()
+from functions import app_info, cache_read, cache_write
 
 # initialise app
 app = FastAPI()
-
-# set logformat
-formatter = Logfmter(keys=["level"], mapping={"level": "levelname"})
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
-logging.basicConfig(handlers=[handler])
-
-if "LOG_LEVEL" in os.environ:
-    log_level(os.environ["LOG_LEVEL"])
-
 
 # include "pretty" for backwards compatibility
 class PrettyJSONResponse(Response):

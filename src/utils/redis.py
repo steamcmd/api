@@ -1,11 +1,7 @@
-from main import logger
 import logging
 import config
 import redis
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 def connect():
     """
@@ -13,13 +9,28 @@ def connect():
     """
 
     try:
-        rds = redis.Redis(host=config.redis_host, port=config.redis_port)
+        # try connection string, or default to separate REDIS_* env vars
+        if config.redis_url:
+            rds = redis.Redis.from_url(config.redis_url)
+
+        elif config.redis_password:
+            rds = redis.Redis(
+                host=config.redis_host,
+                port=config.redis_port,
+                password=config.redis_password
+            )
+        else:
+            rds = redis.Redis(
+                host=config.redis_host,
+                port=config.redis_port
+            )
 
     except Exception as error:
-        logger.error("Failed to connect to Redis with error: " + error)
+        logging.error("Failed to connect to Redis with error: " + error)
         return False
 
     return rds
+
 
 
 def read(key):

@@ -181,23 +181,3 @@ def redis_write(app_id, data):
 
     # return fail status
     return False
-
-
-def log_level(level):
-    """
-    Sets lowest level to log.
-    """
-
-    match level:
-        case "debug":
-            logging.getLogger().setLevel(logging.DEBUG)
-        case "info":
-            logging.getLogger().setLevel(logging.INFO)
-        case "warning":
-            logging.getLogger().setLevel(logging.WARNING)
-        case "error":
-            logging.getLogger().setLevel(logging.ERROR)
-        case "critical":
-            logging.getLogger().setLevel(logging.CRITICAL)
-        case _:
-            logging.getLogger().setLevel(logging.WARNING)
