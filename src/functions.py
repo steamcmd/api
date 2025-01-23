@@ -9,7 +9,6 @@ import gevent
 import redis
 import logging
 from steam.client import SteamClient
-from deta import Deta
 
 
 def app_info(app_id):
@@ -68,8 +67,6 @@ def cache_read(app_id):
 
     if os.environ["CACHE_TYPE"] == "redis":
         return redis_read(app_id)
-    elif os.environ["CACHE_TYPE"] == "deta":
-        return deta_read(app_id)
     else:
         # print query parse error and return empty dict
         logging.error(
@@ -88,8 +85,6 @@ def cache_write(app_id, data):
 
     if os.environ["CACHE_TYPE"] == "redis":
         return redis_write(app_id, data)
-    elif os.environ["CACHE_TYPE"] == "deta":
-        return deta_write(app_id, data)
     else:
         # print query parse error and return empty dict
         logging.error(
@@ -206,69 +201,3 @@ def log_level(level):
             logging.getLogger().setLevel(logging.CRITICAL)
         case _:
             logging.getLogger().setLevel(logging.WARNING)
-
-
-def deta_read(app_id):
-    """
-    Read app info from Deta base cache.
-    """
-
-    # initialize with a project key
-    deta = Deta(os.environ["DETA_PROJECT_KEY"])
-
-    # connect (and create) database
-    dbs = deta.Base(os.environ["DETA_BASE_NAME"])
-
-    try:
-        # get info from cache
-        data = dbs.get(str(app_id))
-
-        # return if not found
-        if not data:
-            # return failed status
-            return False
-
-        # return cached data
-        return data["data"]
-
-    except Exception as read_error:
-        # print query parse error and return empty dict
-        print(
-            "The following error occured while trying to read and decode "
-            + "from Deta cache:"
-        )
-        print("> " + str(read_error))
-
-        # return failed status
-        return False
-
-
-def deta_write(app_id, data):
-    """
-    Write app info to Deta base cache.
-    """
-
-    # initialize with a project key
-    deta = Deta(os.environ["DETA_PROJECT_KEY"])
-
-    # connect (and create) database
-    dbs = deta.Base(os.environ["DETA_BASE_NAME"])
-
-    # write cache data and set ttl
-    try:
-        # set expiration ttl
-        expiration = int(os.environ["CACHE_EXPIRATION"])
-
-        # insert data into cache
-        dbs.put({"data": data}, str(app_id), expire_in=expiration)
-
-        # return succes status
-        return True
-
-    except Exception as write_error:
-        # print query parse error and return empty dict
-        print("The following error occured while trying to write to Deta cache:")
-        print("> " + str(write_error))
-
-    # return fail status
-    return False

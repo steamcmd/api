@@ -5,6 +5,7 @@ Main application and entrypoint.
 # import modules
 import os
 import json
+import config
 import semver
 import typing
 import logging

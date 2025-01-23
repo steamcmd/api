@@ -1,5 +1,4 @@
 *.pyc
 __pycache__
 .venv
-.deta
 .env
