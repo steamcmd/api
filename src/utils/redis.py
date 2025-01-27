@@ -17,12 +17,14 @@ def connect():
             rds = redis.Redis(
                 host=config.redis_host,
                 port=config.redis_port,
-                password=config.redis_password
+                password=config.redis_password,
+                #db=str(redis_database_web)
             )
         else:
             rds = redis.Redis(
                 host=config.redis_host,
-                port=config.redis_port
+                port=config.redis_port,
+                #db=str(redis_database_web)
             )
 
     except Exception as error:
@@ -30,7 +32,6 @@ def connect():
         return False
 
     return rds
-
 
 
 def read(key):

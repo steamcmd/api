@@ -109,10 +109,6 @@ REDIS_URL="redis://YourUsername:YourRedisP@ssword!@your.redis.host.example.com:6
 
 # logging
 LOG_LEVEL=info
-
-# deta
-DETA_BASE_NAME="steamcmd"
-DETA_PROJECT_KEY="YourDet@ProjectKey!"
 ```
 
 ## Development

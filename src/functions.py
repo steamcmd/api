@@ -3,6 +3,8 @@ General Functions
 """
 
 # import modules
+import utils.redis
+import config
 import os
 import json
 import gevent
@@ -65,7 +67,7 @@ def cache_read(app_id):
     Read app info from chosen cache.
     """
 
-    if os.environ["CACHE_TYPE"] == "redis":
+    if config.cache_type == "redis":
         return redis_read(app_id)
     else:
         # print query parse error and return empty dict
@@ -83,7 +85,7 @@ def cache_write(app_id, data):
     write app info to chosen cache.
     """
 
-    if os.environ["CACHE_TYPE"] == "redis":
+    if config.cache_type == "redis":
         return redis_write(app_id, data)
     else:
         # print query parse error and return empty dict
@@ -96,33 +98,12 @@ def cache_write(app_id, data):
     return False
 
 
-def redis_connection():
-    """
-    Parse redis config and connect.
-    """
-
-    # try connection string, or default to separate REDIS_* env vars
-    if "REDIS_URL" in os.environ:
-        rds = redis.Redis.from_url(os.environ["REDIS_URL"])
-    elif "REDIS_PASSWORD" in os.environ:
-        rds = redis.Redis(
-            host=os.environ["REDIS_HOST"],
-            port=os.environ["REDIS_PORT"],
-            password=os.environ["REDIS_PASSWORD"],
-        )
-    else:
-        rds = redis.Redis(host=os.environ["REDIS_HOST"], port=os.environ["REDIS_PORT"])
-
-    # return connection
-    return rds
-
-
 def redis_read(app_id):
     """
     Read app info from Redis cache.
     """
 
-    rds = redis_connection()
+    rds = utils.redis.connect()
 
     try:
         # get info from cache
@@ -158,7 +139,7 @@ def redis_write(app_id, data):
     Write app info to Redis cache.
     """
 
-    rds = redis_connection()
+    rds = utils.redis.connect()
 
     # write cache data and set ttl
     try:
@@ -166,8 +147,12 @@ def redis_write(app_id, data):
         data = json.dumps(data)
 
         # insert data into cache
-        expiration = int(os.environ["CACHE_EXPIRATION"])
-        rds.set(app_id, data, ex=expiration)
+        if int(config.cache_expiration) == 0:
+            rds.set(app_id, data)
+
+        else:
+            expiration = int(config.cache_expiration)
+            rds.set(app_id, data, ex=expiration)
 
         # return succes status
         return True

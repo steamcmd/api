@@ -29,7 +29,7 @@ def read_env(name, default=False, dependency={}, choices=[]):
     try:
         value = os.environ[name]
         if choices and value not in choices:
-            logger.critical(
+            logging.critical(
                 "The value '"
                 + str(value)
                 + "' of variable '"
@@ -47,7 +47,7 @@ def read_env(name, default=False, dependency={}, choices=[]):
 
         for dep in dependency:
             if read_env(dep) == dependency[dep]:
-                logger.critical(
+                logging.critical(
                     "The variable '"
                     + str(name)
                     + "' must be set because it is required when '"

@@ -3,9 +3,9 @@ Main application and entrypoint.
 """
 
 # import modules
+import config
 import os
 import json
-import config
 import semver
 import typing
 import logging
@@ -34,7 +34,7 @@ class PrettyJSONResponse(Response):
 def read_app(app_id: int, pretty: bool = False):
     logging.info("Requested app info", extra={"app_id": app_id})
 
-    if "CACHE" in os.environ and os.environ["CACHE"]:
+    if config.cache == "True":
         info = cache_read(app_id)
 
         if not info:
@@ -77,10 +77,10 @@ def read_item(pretty: bool = False):
     logging.info("Requested api version")
 
     # check if version succesfully read and parsed
-    if "VERSION" in os.environ and os.environ["VERSION"]:
+    if config.version:
         return {
             "status": "success",
-            "data": semver.parse(os.environ["VERSION"]),
+            "data": semver.parse(config.version),
             "pretty": pretty,
         }
     else:

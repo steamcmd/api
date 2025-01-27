@@ -8,10 +8,16 @@ from logfmter import Logfmter
 # fmt: off
 
 # Set variables based on environment
+cache = utils.helper.read_env("CACHE", "False", choices=[ "True", "False" ])
+cache_type = utils.helper.read_env("CACHE_TYPE", "redis", choices=[ "redis" ])
+cache_expiration = utils.helper.read_env("CACHE_EXPIRATION", "120")
+
 redis_url = utils.helper.read_env("REDIS_URL")
 redis_host = utils.helper.read_env("REDIS_HOST", "localhost")
 redis_port = utils.helper.read_env("REDIS_PORT", "6379")
 redis_password = utils.helper.read_env("REDIS_PASSWORD")
+redis_database_web = utils.helper.read_env("REDIS_DATABASE_WEB", "0")
+redis_database_job = utils.helper.read_env("REDIS_DATABASE_JOB", "1")
 
 storage_type = utils.helper.read_env("STORAGE_TYPE", "local", choices=[ "local", "object" ])
 storage_directory = utils.helper.read_env("STORAGE_DIRECTORY", "data/", dependency={ "STORAGE_TYPE": "local" })
@@ -23,6 +29,7 @@ storage_object_secure = utils.helper.read_env("STORAGE_OBJECT_SECURE", True)
 storage_object_region = utils.helper.read_env("STORAGE_OBJECT_REGION", False)
 
 log_level = utils.helper.read_env("LOG_LEVEL", "info", choices=[ "debug", "info", "warning", "error", "critical" ])
+version = utils.helper.read_env("VERSION", "9.9.9")
 
 # Set general settings
 chunk_size = 10

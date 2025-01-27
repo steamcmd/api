@@ -28,6 +28,7 @@ def get_app_list():
     apps = []
     if response.status_code != 200:
         logger.error("The Steam GetAppList API endpoint returned a non-200 http code")
+        return False
 
     else:
         for app in response_json["applist"]["apps"]:
