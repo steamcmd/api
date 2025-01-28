@@ -62,42 +62,6 @@ def app_info(app_id):
         logging.error(err, extra={"app_id": app_id})
 
 
-def cache_read(app_id):
-    """
-    Read app info from chosen cache.
-    """
-
-    if config.cache_type == "redis":
-        return redis_read(app_id)
-    else:
-        # print query parse error and return empty dict
-        logging.error(
-            "Set incorrect cache type",
-            extra={"app_id": app_id, "cache_type": os.environ["CACHE_TYPE"]},
-        )
-
-    # return failed status
-    return False
-
-
-def cache_write(app_id, data):
-    """
-    write app info to chosen cache.
-    """
-
-    if config.cache_type == "redis":
-        return redis_write(app_id, data)
-    else:
-        # print query parse error and return empty dict
-        logging.error(
-            "Set incorrect cache type",
-            extra={"app_id": app_id, "cache_type": os.environ["CACHE_TYPE"]},
-        )
-
-    # return failed status
-    return False
-
-
 def redis_read(app_id):
     """
     Read app info from Redis cache.
@@ -116,9 +80,6 @@ def redis_read(app_id):
 
         # decode bytes to str
         data = data.decode("UTF-8")
-
-        # convert json to python dict
-        data = json.loads(data)
 
         # return cached data
         return data
@@ -143,9 +104,6 @@ def redis_write(app_id, data):
 
     # write cache data and set ttl
     try:
-        # convert dict to json
-        data = json.dumps(data)
-
         # insert data into cache
         if int(config.cache_expiration) == 0:
             rds.set(app_id, data)

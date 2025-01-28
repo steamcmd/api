@@ -11,7 +11,7 @@ import typing
 import logging
 from dotenv import load_dotenv
 from fastapi import FastAPI, Response
-from functions import app_info, cache_read, cache_write
+from functions import app_info, redis_read, redis_write
 
 # load configuration
 load_dotenv()
@@ -39,14 +39,17 @@ def read_app(app_id: int, pretty: bool = False):
     logging.info("Requested app info", extra={"app_id": app_id})
 
     if config.cache == "True":
-        info = cache_read(app_id)
+        info = redis_read(app_id)
+        if info:
+            info = json.loads(info)
 
         if not info:
             logging.info(
                 "App info could not be found in cache", extra={"app_id": app_id}
             )
             info = app_info(app_id)
-            cache_write(app_id, info)
+            data = json.dumps(info)
+            redis_write(app_id, data)
         else:
             logging.info(
                 "App info succesfully retrieved from cache",
