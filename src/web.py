@@ -9,8 +9,12 @@ import json
 import semver
 import typing
 import logging
+from dotenv import load_dotenv
 from fastapi import FastAPI, Response
 from functions import app_info, cache_read, cache_write
+
+# load configuration
+load_dotenv()
 
 # initialise app
 app = FastAPI()
