@@ -2,7 +2,6 @@ import utils.general
 import utils.helper
 import logging
 import config
-import os
 from dotenv import load_dotenv
 from logfmter import Logfmter
 
@@ -52,10 +51,10 @@ beat_schedule = {
         "task": "check_changelist",
         "schedule": 5.0
     },
-    "check-missing-apps-every-30-minutes": {
-        "task": "check_missing_apps",
-        "schedule": 1800.0,
-    },
+    #"check-missing-apps-every-30-minutes": {
+    #    "task": "check_missing_apps",
+    #    "schedule": 1800.0,
+    #},
     "check-deadlocks-every-1-hour": {
         "task": "check_deadlocks",
         "schedule": 3600.0,

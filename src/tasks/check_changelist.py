@@ -1,9 +1,10 @@
-from main import app, logger
+from job import app, logger
 from celery_singleton import Singleton
 from .get_app_info import get_app_info_task
 from .get_package_info import get_package_info_task
 import utils.steam
 import utils.redis
+import logging
 import config
 import json
 
@@ -15,25 +16,15 @@ def check_changelist_task():
     and start tasks to retrieve these changes.
     """
 
-    previous_change_number = utils.redis.read("change_number")
+    previous_change_number = utils.redis.read("_state.change_number")
     latest_change_number = utils.steam.get_change_number()
 
     if not previous_change_number:
-        logger.warning("Previous changenumber could not be retrieved from Redis")
-        current_state = utils.storage.read("state/", "changes.json")
-        if current_state:
-            content = json.loads(current_state)
-            previous_change_number = content["change_number"]
-        else:
-            logger.warning(
-                "Previous changenumber could not be retrieved from statefile in storage"
-            )
-
-    if not previous_change_number:
-        utils.redis.write("change_number", latest_change_number)
+        logging.warning("Previous changenumber could not be retrieved from Redis")
+        utils.redis.write("_state.change_number", latest_change_number)
 
     elif int(previous_change_number) == int(latest_change_number):
-        logger.info(
+        logging.info(
             "The previous and current change number "
             + str(latest_change_number)
             + " are the same"
@@ -41,22 +32,17 @@ def check_changelist_task():
         pass
 
     else:
+        logging.info("The changenumber has been updated from " + str(previous_change_number) + " to " + str(latest_change_number))
         changes = utils.steam.get_changes_since_change_number(previous_change_number)
 
         for i in range(0, len(changes["apps"]), config.chunk_size):
             chunk = changes["apps"][i : i + config.chunk_size]
             get_app_info_task.delay(chunk)
 
-        for i in range(0, len(changes["packages"]), config.chunk_size):
-            chunk = changes["packages"][i : i + config.chunk_size]
-            get_package_info_task.delay(chunk)
+        #for i in range(0, len(changes["packages"]), config.chunk_size):
+        #    chunk = changes["packages"][i : i + config.chunk_size]
+        #    get_package_info_task.delay(chunk)
 
-        utils.redis.write("change_number", latest_change_number)
-
-        content = {
-            "changed_apps": len(changes["apps"]),
-            "changed_packages": len(changes["packages"]),
-            "change_number": latest_change_number,
-        }
-        content = json.dumps(content)
-        utils.storage.write(content, "state/", "changes.json")
+        utils.redis.write("_state.change_number", latest_change_number)
+        utils.redis.increment("_state.changed_apps", len(changes["apps"]))
+        utils.redis.increment("_state.changed_packages", len(changes["packages"]))

@@ -1,4 +1,3 @@
-#from main import logger
 import logging
 import sys
 import os

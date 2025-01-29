@@ -1,4 +1,4 @@
-from main import app, logger
+from job import app, logger
 import utils.storage
 import utils.steam
 import json
@@ -21,4 +21,4 @@ def get_package_info_task(packages=[]):
 
     for package_obj in packages:
         content = json.dumps(packages[package_obj])
-        utils.storage.write(content, "package/", str(package_obj) + ".json")
+        utils.redis.write("package." + str(package_obj), content)

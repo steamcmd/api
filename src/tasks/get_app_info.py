@@ -1,4 +1,4 @@
-from main import app, logger
+from job import app, logger
 import utils.storage
 import utils.steam
 import json
@@ -21,4 +21,4 @@ def get_app_info_task(apps=[]):
 
     for app_obj in apps:
         content = json.dumps(apps[app_obj])
-        utils.storage.write(content, "app/", str(app_obj) + ".json")
+        utils.redis.write("app." + str(app_obj), content)

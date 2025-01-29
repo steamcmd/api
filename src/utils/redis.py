@@ -95,3 +95,30 @@ def write(key, data):
 
     # return fail status
     return False
+
+
+def increment(key, amount=1):
+    """
+    Increment value of amount to
+    specified key to Redis.
+    """
+
+    rds = connect()
+
+    # increment data of key
+    try:
+        # increment and set new value
+        rds.incrby(key, amount)
+
+        # return succes status
+        return True
+
+    except Exception as redis_error:
+        # print query parse error and return empty dict
+        logging.error(
+            "An error occured while trying to increment value in Redis cache",
+            extra={"key": key, "error_msg": redis_error},
+        )
+
+    # return fail status
+    return False

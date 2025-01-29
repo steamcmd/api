@@ -1,5 +1,5 @@
 """
-Main application and entrypoint.
+Web Service and main API.
 """
 
 # import modules
@@ -11,7 +11,6 @@ import semver
 import typing
 import logging
 from fastapi import FastAPI, Response
-from functions import app_info
 
 # initialise app
 app = FastAPI()
@@ -36,7 +35,7 @@ def read_app(app_id: int, pretty: bool = False):
     logging.info("Requested app info", extra={"apps": str([app_id])})
 
     if config.cache == "True":
-        info = utils.redis.read(app_id)
+        info = utils.redis.read("app." + str(app_id))
 
         if not info:
             logging.info(
@@ -44,7 +43,7 @@ def read_app(app_id: int, pretty: bool = False):
             )
             info = utils.steam.get_apps_info([app_id])
             data = json.dumps(info)
-            utils.redis.write(app_id, data)
+            utils.redis.write("app." + str(app_id), data)
         else:
             info = json.loads(info)
             logging.info(

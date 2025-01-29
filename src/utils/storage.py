@@ -1,6 +1,7 @@
-from main import logger
+from job import logger
 import utils.helper
 import config
+import logging
 import os
 from minio import Minio
 from io import BytesIO
@@ -76,7 +77,7 @@ def local_read(path, filename):
         content = content.read()
 
     except Exception:
-        logger.error("The following file could not be read: " + file)
+        logging.error("The following file could not be read: " + file)
         return False
 
     return content
@@ -96,7 +97,7 @@ def local_write(content, path, filename):
         f = open(file, "w")
         f.write(content)
         f.close()
-        logger.info("Written the following file: " + file)
+        logging.info("Written the following file: " + file)
 
     except Exception:
         logger.error("The following file could not be written locally: " + file)
@@ -117,7 +118,7 @@ def local_delete(path, filename):
     try:
         os.remove(file)
     except OSError as err:
-        logger.error(
+        logging.error(
             "The following file could not be deleted locally: "
             + err.filename
             + ". The following error occured: "
@@ -141,7 +142,7 @@ def local_list(path):
         content = os.listdir(path)
 
     except Exception:
-        logger.error("The following directory could not be read: " + path)
+        logging.error("The following directory could not be read: " + path)
         return False
 
     return content
@@ -184,7 +185,7 @@ def object_read(path, filename):
         content = conn.get_object(config.storage_object_bucket, file)
 
     except Exception:
-        logger.error("The following file could not be retrieved: " + file)
+        logging.error("The following file could not be retrieved: " + file)
         return False
 
     return content
@@ -243,7 +244,7 @@ def object_list(path, details=False):
             file_list.append(file)
 
     except Exception:
-        logger.error("The files in following directory could not be listed: " + path)
+        logging.error("The files in following directory could not be listed: " + path)
         return False
 
     return file_list

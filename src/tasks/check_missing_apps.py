@@ -1,4 +1,4 @@
-from main import app, logger
+from job import app, logger
 from celery_singleton import Singleton
 from .get_app_info import get_app_info_task
 import utils.storage

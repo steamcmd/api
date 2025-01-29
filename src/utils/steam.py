@@ -30,7 +30,7 @@ def get_app_list():
 
     apps = []
     if response.status_code != 200:
-        logger.error("The Steam GetAppList API endpoint returned a non-200 http code")
+        logging.error("The Steam GetAppList API endpoint returned a non-200 http code")
         return False
 
     else:
@@ -143,11 +143,11 @@ def get_packages_info(packages=[]):
         info = client.get_product_info(packages=packages, timeout=5)
         info = info["packages"]
     except Exception as err:
-        logger.error(
+        logging.error(
             "Something went wrong while querying product info for packages: "
             + str(packages)
         )
-        logger.error(err)
+        logging.error(err)
         return False
 
     return info

@@ -1,4 +1,5 @@
-from main import app, logger
+from job import app
+import logging
 from celery_singleton import clear_locks
 
 
@@ -21,4 +22,4 @@ def check_deadlocks_task(self):
 
     clear_locks(app)
 
-    logger.info("Cleared locks. No tasks were running.")
+    logging.info("Cleared locks. No tasks were running.")
