@@ -19,6 +19,42 @@ def init_client():
     return client
 
 
+#def init_client():
+#    """
+#    Initialize Steam client, login and
+#    return the client.
+#    """
+#
+#    connect_retries = 2
+#    connect_timeout = 3
+#
+#    try:
+#        # Sometimes it hangs for 30+ seconds. Normal connection takes about 500ms
+#        for _ in range(connect_retries):
+#            count = str(_)
+#
+#            try:
+#                with gevent.Timeout(connect_timeout):
+#
+#                    logging.debug("Connecting via steamclient to steam api")
+#                    client = SteamClient()
+#                    client.anonymous_login()
+#                    client.verbose_debug = False
+#
+#                    return client
+#
+#            except gevent.timeout.Timeout:
+#                client._connecting = False
+#
+#            else:
+#                break
+#        else:
+#            raise Exception(f"Max connect retries ({connect_retries}) exceeded")
+#
+#    except Exception as err:
+#        return False
+
+
 def get_app_list():
     """
     Get list of id's of all current apps in
@@ -40,16 +76,76 @@ def get_app_list():
     return apps
 
 
+#def get_change_number():
+#    """
+#    Get and return the latest change number.
+#    """
+#
+#    client = init_client()
+#    info = client.get_changes_since(1, app_changes=False, package_changes=False)
+#    change_number = info.current_change_number
+#
+#    return change_number
+
+
 def get_change_number():
     """
     Get and return the latest change number.
     """
 
-    client = init_client()
-    info = client.get_changes_since(1, app_changes=False, package_changes=False)
-    change_number = info.current_change_number
+    connect_retries = 2
+    connect_timeout = 3
 
-    return change_number
+    try:
+        # Sometimes it hangs for 30+ seconds. Normal connection takes about 500ms
+        for _ in range(connect_retries):
+            count = str(_)
+
+            try:
+                with gevent.Timeout(connect_timeout):
+
+                    client = init_client()
+                    info = client.get_changes_since(1, app_changes=False, package_changes=False)
+                    change_number = info.current_change_number
+
+                    return change_number
+
+            except gevent.timeout.Timeout:
+                client._connecting = False
+
+            else:
+                break
+        else:
+            raise Exception(f"Max connect retries ({connect_retries}) exceeded")
+
+    except Exception as err:
+        return False
+
+
+#def get_changes_since_change_number(change_number):
+#    """
+#    Get and return lists of changed apps and
+#    packages since the specified change number.
+#    """
+#
+#    client = init_client()
+#    info = client.get_changes_since(
+#        int(change_number), app_changes=True, package_changes=True
+#    )
+#
+#    app_list = []
+#    if info.app_changes:
+#        for app in info.app_changes:
+#            app_list.append(app.appid)
+#
+#    package_list = []
+#    if info.package_changes:
+#        for package in info.package_changes:
+#            package_list.append(package.packageid)
+#
+#    changes = {"apps": app_list, "packages": package_list}
+#
+#    return changes
 
 
 def get_changes_since_change_number(change_number):
@@ -58,24 +154,47 @@ def get_changes_since_change_number(change_number):
     packages since the specified change number.
     """
 
-    client = init_client()
-    info = client.get_changes_since(
-        int(change_number), app_changes=True, package_changes=True
-    )
+    connect_retries = 2
+    connect_timeout = 3
 
-    app_list = []
-    if info.app_changes:
-        for app in info.app_changes:
-            app_list.append(app.appid)
+    try:
+        # Sometimes it hangs for 30+ seconds. Normal connection takes about 500ms
+        for _ in range(connect_retries):
+            count = str(_)
 
-    package_list = []
-    if info.package_changes:
-        for package in info.package_changes:
-            package_list.append(package.packageid)
+            try:
+                with gevent.Timeout(connect_timeout):
 
-    changes = {"apps": app_list, "packages": package_list}
 
-    return changes
+                    client = init_client()
+                    info = client.get_changes_since(
+                        int(change_number), app_changes=True, package_changes=True
+                    )
+
+                    app_list = []
+                    if info.app_changes:
+                        for app in info.app_changes:
+                            app_list.append(app.appid)
+
+                    package_list = []
+                    if info.package_changes:
+                        for package in info.package_changes:
+                            package_list.append(package.packageid)
+
+                    changes = {"apps": app_list, "packages": package_list}
+
+                    return changes
+
+            except gevent.timeout.Timeout:
+                client._connecting = False
+
+            else:
+                break
+        else:
+            raise Exception(f"Max connect retries ({connect_retries}) exceeded")
+
+    except Exception as err:
+        return False
 
 
 def get_apps_info(apps=[]):
