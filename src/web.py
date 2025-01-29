@@ -3,18 +3,15 @@ Main application and entrypoint.
 """
 
 # import modules
+import utils.redis
+import utils.steam
 import config
-import os
 import json
 import semver
 import typing
 import logging
-from dotenv import load_dotenv
 from fastapi import FastAPI, Response
-from functions import app_info, redis_read, redis_write
-
-# load configuration
-load_dotenv()
+from functions import app_info
 
 # initialise app
 app = FastAPI()
@@ -36,47 +33,46 @@ class PrettyJSONResponse(Response):
 
 @app.get("/v1/info/{app_id}", response_class=PrettyJSONResponse)
 def read_app(app_id: int, pretty: bool = False):
-    logging.info("Requested app info", extra={"app_id": app_id})
+    logging.info("Requested app info", extra={"apps": str([app_id])})
 
     if config.cache == "True":
-        info = redis_read(app_id)
-        if info:
-            info = json.loads(info)
+        info = utils.redis.read(app_id)
 
         if not info:
             logging.info(
-                "App info could not be found in cache", extra={"app_id": app_id}
+                "App info could not be found in cache", extra={"apps": str([app_id])}
             )
-            info = app_info(app_id)
+            info = utils.steam.get_apps_info([app_id])
             data = json.dumps(info)
-            redis_write(app_id, data)
+            utils.redis.write(app_id, data)
         else:
+            info = json.loads(info)
             logging.info(
                 "App info succesfully retrieved from cache",
-                extra={"app_id": app_id},
+                extra={"apps": str([app_id])},
             )
 
     else:
-        info = app_info(app_id)
+        info = utils.steam.get_apps_info([app_id])
 
     if info is None:
         logging.info(
             "The SteamCMD backend returned no actual data and failed",
-            extra={"app_id": app_id},
+            extra={"apps": str([app_id])},
         )
         # return empty result for not found app
         return {"data": {app_id: {}}, "status": "failed", "pretty": pretty}
 
-    if not info["apps"]:
+    if not info:
         logging.info(
             "No app has been found at Steam but the request was succesfull",
-            extra={"app_id": app_id},
+            extra={"apps": str([app_id])},
         )
         # return empty result for not found app
         return {"data": {app_id: {}}, "status": "success", "pretty": pretty}
 
-    logging.info("Succesfully retrieved app info", extra={"app_id": app_id})
-    return {"data": info["apps"], "status": "success", "pretty": pretty}
+    logging.info("Succesfully retrieved app info", extra={"apps": str([app_id])})
+    return {"data": info, "status": "success", "pretty": pretty}
 
 
 @app.get("/v1/version", response_class=PrettyJSONResponse)

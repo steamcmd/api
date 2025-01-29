@@ -5,19 +5,21 @@ General Functions
 # import modules
 import utils.redis
 import config
-import os
-import json
 import gevent
-import redis
 import logging
 from steam.client import SteamClient
 
 
-def app_info(app_id):
+def app_info(apps=[]):
+    """
+    Get product info for list of apps and
+    return the output untouched.
+    """
+
     connect_retries = 2
     connect_timeout = 3
 
-    logging.info("Started requesting app info", extra={"app_id": app_id})
+    logging.info("Started requesting app info", extra={"apps": str(apps)})
 
     try:
         # Sometimes it hangs for 30+ seconds. Normal connection takes about 500ms
@@ -28,7 +30,7 @@ def app_info(app_id):
                 with gevent.Timeout(connect_timeout):
                     logging.info(
                         "Retrieving app info from steamclient",
-                        extra={"app_id": app_id, "retry_count": count},
+                        extra={"apps": str(apps), "retry_count": count},
                     )
 
                     logging.debug("Connecting via steamclient to steam api")
@@ -36,8 +38,8 @@ def app_info(app_id):
                     client.anonymous_login()
                     client.verbose_debug = False
 
-                    logging.debug("Requesting app info from steam api")
-                    info = client.get_product_info(apps=[app_id], timeout=1)
+                    logging.debug("Requesting app info from steam api", extra={"apps": str(apps)})
+                    info = client.get_product_info(apps=apps, timeout=1)
 
                     return info
 
@@ -48,79 +50,36 @@ def app_info(app_id):
                 client._connecting = False
 
             else:
-                logging.info("Succesfully retrieved app info", extra={"app_id": app_id})
+                logging.info("Succesfully retrieved app info", extra={"apps": str(apps)})
                 break
         else:
             logging.error(
                 "Max connect retries exceeded",
-                extra={"connect_retries": connect_retries},
+                extra={"apps": str(apps), "connect_retries": connect_retries},
             )
             raise Exception(f"Max connect retries ({connect_retries}) exceeded")
 
     except Exception as err:
-        logging.error("Failed in retrieving app info", extra={"app_id": app_id})
-        logging.error(err, extra={"app_id": app_id})
-
-
-def redis_read(app_id):
-    """
-    Read app info from Redis cache.
-    """
-
-    rds = utils.redis.connect()
-
-    try:
-        # get info from cache
-        data = rds.get(app_id)
-
-        # return if not found
-        if not data:
-            # return failed status
-            return False
-
-        # decode bytes to str
-        data = data.decode("UTF-8")
-
-        # return cached data
-        return data
-
-    except Exception as redis_error:
-        # print query parse error and return empty dict
-        logging.error(
-            "An error occured while trying to read and decode from Redis cache",
-            extra={"app_id": app_id, "error_msg": redis_error},
-        )
-
-        # return failed status
+        logging.error("Failed in retrieving app info with error: " + str(err), extra={"apps": str(apps)})
         return False
 
+    return info
 
-def redis_write(app_id, data):
+def get_apps_info(apps=[]):
     """
-    Write app info to Redis cache.
+    Get product info for list of apps and
+    return the output untouched.
     """
 
-    rds = utils.redis.connect()
-
-    # write cache data and set ttl
     try:
-        # insert data into cache
-        if int(config.cache_expiration) == 0:
-            rds.set(app_id, data)
-
-        else:
-            expiration = int(config.cache_expiration)
-            rds.set(app_id, data, ex=expiration)
-
-        # return succes status
-        return True
-
-    except Exception as redis_error:
-        # print query parse error and return empty dict
-        logging.error(
-            "An error occured while trying to write to Redis cache",
-            extra={"app_id": app_id, "error_msg": redis_error},
+        client = init_client()
+        info = client.get_product_info(apps=apps, timeout=5)
+        info = info["apps"]
+    except Exception as err:
+        logger.error(
+            "Something went wrong while querying product info", extra={"apps": str(apps)}
         )
+        logger.error(err)
+        return False
 
-    # return fail status
-    return False
+    return info

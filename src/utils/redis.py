@@ -40,13 +40,30 @@ def read(key):
     """
 
     rds = connect()
-    data = rds.get(key)
 
-    if not data:
-        return False
-    data = data.decode("UTF-8")
+    try:
+        # get info from cache
+        data = rds.get(key)
 
-    return data
+        # return False if not found
+        if not data:
+            return False
+
+        # decode bytes to str
+        data = data.decode("UTF-8")
+
+        # return data from Redis
+        return data
+
+    except Exception as redis_error:
+        # print query parse error and return empty dict
+        logging.error(
+            "An error occured while trying to read and decode from Redis",
+            extra={"key": key, "error_msg": redis_error},
+        )
+
+    # return failed status
+    return False
 
 
 def write(key, data):
@@ -55,6 +72,26 @@ def write(key, data):
     """
 
     rds = connect()
-    rds.set(key, data)
 
-    return True
+    # write data and set ttl
+    try:
+        expiration = int(config.cache_expiration)
+
+        # insert data into Redis
+        if expiration == 0:
+            rds.set(key, data)
+        else:
+            rds.set(key, data, ex=expiration)
+
+        # return succes status
+        return True
+
+    except Exception as redis_error:
+        # print query parse error and return empty dict
+        logging.error(
+            "An error occured while trying to write to Redis cache",
+            extra={"key": key, "error_msg": redis_error},
+        )
+
+    # return fail status
+    return False

@@ -3,15 +3,19 @@ import utils.helper
 import logging
 import config
 import os
+from dotenv import load_dotenv
 from logfmter import Logfmter
 
 # fmt: off
+
+# Load values from .env file
+load_dotenv()
 
 # Set variables based on environment
 cache = utils.helper.read_env("CACHE", "False", choices=[ "True", "False" ])
 cache_type = utils.helper.read_env("CACHE_TYPE", "redis", choices=[ "redis" ])
 cache_expiration = utils.helper.read_env("CACHE_EXPIRATION", "120")
-
+ 
 redis_url = utils.helper.read_env("REDIS_URL")
 redis_host = utils.helper.read_env("REDIS_HOST", "localhost")
 redis_port = utils.helper.read_env("REDIS_PORT", "6379")
@@ -37,7 +41,7 @@ chunk_size = 10
 formatter = Logfmter(keys=["level"], mapping={"level": "levelname"})
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
-logging.basicConfig(handlers=[handler], level=utils.general.log_level(config.log_level))
+logging.basicConfig(handlers=[handler], level=utils.general.log_level(log_level))
 
 # Set Celery configuration
 timezone = "UTC"
