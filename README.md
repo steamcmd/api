@@ -113,14 +113,23 @@ LOG_LEVEL=info
 
 ## Development
 
-Run the api locally by installing a web server like uvicorn and running it:
+Run the Web Service (FastAPI) locally by running the FastAPI development server:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-pip install uvicorn
 cd src/
-uvicorn main:app --reload
+fastapi dev web.py
+```
+Now you can reach the SteamCMD API locally on [http://localhost:8000](http://localhost:8000).
+
+Run the Job Service (Celery) locally by running celery directly:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cd src/
+celery -A job worker --loglevel=info --concurrency=2 --beat
 ```
 
 The easiest way to spin up a complete development environment is using Docker
