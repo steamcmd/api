@@ -6,7 +6,7 @@ import json
 
 @app.task(
     name="get_app_info",
-    time_limit=3,
+    time_limit=15,
     autoretry_for=(Exception,),
     retry_kwargs={"max_retries": 3, "countdown": 5},
 )
@@ -20,5 +20,6 @@ def get_app_info_task(apps=[]):
     apps = utils.steam.get_apps_info(apps)
 
     for app_obj in apps:
-        content = json.dumps(apps[app_obj])
+        content = { app_obj : apps[app_obj] }
+        content = json.dumps(content)
         utils.redis.write("app." + str(app_obj), content)

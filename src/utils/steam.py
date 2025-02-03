@@ -19,42 +19,6 @@ def init_client():
     return client
 
 
-#def init_client():
-#    """
-#    Initialize Steam client, login and
-#    return the client.
-#    """
-#
-#    connect_retries = 2
-#    connect_timeout = 3
-#
-#    try:
-#        # Sometimes it hangs for 30+ seconds. Normal connection takes about 500ms
-#        for _ in range(connect_retries):
-#            count = str(_)
-#
-#            try:
-#                with gevent.Timeout(connect_timeout):
-#
-#                    logging.debug("Connecting via steamclient to steam api")
-#                    client = SteamClient()
-#                    client.anonymous_login()
-#                    client.verbose_debug = False
-#
-#                    return client
-#
-#            except gevent.timeout.Timeout:
-#                client._connecting = False
-#
-#            else:
-#                break
-#        else:
-#            raise Exception(f"Max connect retries ({connect_retries}) exceeded")
-#
-#    except Exception as err:
-#        return False
-
-
 def get_app_list():
     """
     Get list of id's of all current apps in
@@ -76,18 +40,6 @@ def get_app_list():
     return apps
 
 
-#def get_change_number():
-#    """
-#    Get and return the latest change number.
-#    """
-#
-#    client = init_client()
-#    info = client.get_changes_since(1, app_changes=False, package_changes=False)
-#    change_number = info.current_change_number
-#
-#    return change_number
-
-
 def get_change_number():
     """
     Get and return the latest change number.
@@ -95,6 +47,7 @@ def get_change_number():
 
     connect_retries = 2
     connect_timeout = 3
+    client = None
 
     try:
         # Sometimes it hangs for 30+ seconds. Normal connection takes about 500ms
@@ -108,44 +61,33 @@ def get_change_number():
                     info = client.get_changes_since(1, app_changes=False, package_changes=False)
                     change_number = info.current_change_number
 
+                    client.logout()
+
                     return change_number
 
             except gevent.timeout.Timeout:
-                client._connecting = False
+                if client:
+                    client._connecting = False
+                    client.logout()
 
             else:
                 break
         else:
+            if client:
+                client._connecting = False
+                client.logout()
             raise Exception(f"Max connect retries ({connect_retries}) exceeded")
 
     except Exception as err:
+        if client:
+            client._connecting = False
+            client.logout()
+
+        logging.error(
+            "Encountered the following error when trying to retrieve latest change number: "
+            + str(err)
+        )
         return False
-
-
-#def get_changes_since_change_number(change_number):
-#    """
-#    Get and return lists of changed apps and
-#    packages since the specified change number.
-#    """
-#
-#    client = init_client()
-#    info = client.get_changes_since(
-#        int(change_number), app_changes=True, package_changes=True
-#    )
-#
-#    app_list = []
-#    if info.app_changes:
-#        for app in info.app_changes:
-#            app_list.append(app.appid)
-#
-#    package_list = []
-#    if info.package_changes:
-#        for package in info.package_changes:
-#            package_list.append(package.packageid)
-#
-#    changes = {"apps": app_list, "packages": package_list}
-#
-#    return changes
 
 
 def get_changes_since_change_number(change_number):
@@ -156,6 +98,7 @@ def get_changes_since_change_number(change_number):
 
     connect_retries = 2
     connect_timeout = 3
+    client = None
 
     try:
         # Sometimes it hangs for 30+ seconds. Normal connection takes about 500ms
@@ -183,17 +126,27 @@ def get_changes_since_change_number(change_number):
 
                     changes = {"apps": app_list, "packages": package_list}
 
+                    client.logout()
+
                     return changes
 
             except gevent.timeout.Timeout:
-                client._connecting = False
+                if client:
+                    client._connecting = False
+                    client.logout()
 
             else:
                 break
         else:
+            if client:
+                client._connecting = False
+                client.logout()
             raise Exception(f"Max connect retries ({connect_retries}) exceeded")
 
     except Exception as err:
+        if client:
+            client._connecting = False
+            client.logout()
         return False
 
 
@@ -205,6 +158,7 @@ def get_apps_info(apps=[]):
 
     connect_retries = 2
     connect_timeout = 3
+    client = None
 
     logging.info("Started requesting app info", extra={"apps": str(apps)})
 
@@ -226,18 +180,25 @@ def get_apps_info(apps=[]):
                     info = client.get_product_info(apps=apps, timeout=1)
                     info = info["apps"]
 
+                    client.logout()
+
                     return info
 
             except gevent.timeout.Timeout:
                 logging.warning(
                     "Encountered timeout when trying to connect to steam api. Retrying.."
                 )
-                client._connecting = False
+                if client:
+                    client._connecting = False
+                    client.logout()
 
             else:
                 logging.info("Succesfully retrieved app info", extra={"apps": str(apps)})
                 break
         else:
+            if client:
+                client._connecting = False
+                client.logout()
             logging.error(
                 "Max connect retries exceeded",
                 extra={"apps": str(apps), "connect_retries": connect_retries},
@@ -245,10 +206,11 @@ def get_apps_info(apps=[]):
             raise Exception(f"Max connect retries ({connect_retries}) exceeded")
 
     except Exception as err:
+        if client:
+            client._connecting = False
+            client.logout()
         logging.error("Failed in retrieving app info with error: " + str(err), extra={"apps": str(apps)})
         return False
-
-    return info
 
 
 def get_packages_info(packages=[]):

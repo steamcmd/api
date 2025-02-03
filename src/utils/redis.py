@@ -61,6 +61,7 @@ def read(key):
             "An error occured while trying to read and decode from Redis",
             extra={"key": key, "error_msg": redis_error},
         )
+        logging.error(redis_error)
 
     # return failed status
     return False
@@ -92,6 +93,7 @@ def write(key, data):
             "An error occured while trying to write to Redis cache",
             extra={"key": key, "error_msg": redis_error},
         )
+        logging.error(redis_error)
 
     # return fail status
     return False
