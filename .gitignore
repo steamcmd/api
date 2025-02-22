@@ -9,4 +9,5 @@ __pycache__
 _test.py
 data/
 celerybeat-schedule.db
+celerybeat-schedule-*
 celerybeat-schedule
