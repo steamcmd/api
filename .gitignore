@@ -7,7 +7,6 @@ __pycache__
 .env
 
 _test.py
-data/
 celerybeat-schedule.db
 celerybeat-schedule-*
 celerybeat-schedule

@@ -2,3 +2,8 @@
 __pycache__
 .venv
 .env
+
+_test.py
+celerybeat-schedule.db
+celerybeat-schedule-*
+celerybeat-schedule
