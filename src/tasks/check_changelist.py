@@ -40,18 +40,25 @@ def check_changelist_task():
         pass
 
     else:
-        logging.info("The changenumber has been updated from " + str(previous_change_number) + " to " + str(latest_change_number))
+        logging.info(
+            "The changenumber has been updated from "
+            + str(previous_change_number)
+            + " to "
+            + str(latest_change_number)
+        )
         changes = utils.steam.get_changes_since_change_number(previous_change_number)
 
         while not changes:
-            changes = utils.steam.get_changes_since_change_number(previous_change_number)
+            changes = utils.steam.get_changes_since_change_number(
+                previous_change_number
+            )
             time.sleep(1)
 
         for i in range(0, len(changes["apps"]), config.chunk_size):
             chunk = changes["apps"][i : i + config.chunk_size]
             get_app_info_task.delay(chunk)
 
-        #for i in range(0, len(changes["packages"]), config.chunk_size):
+        # for i in range(0, len(changes["packages"]), config.chunk_size):
         #    chunk = changes["packages"][i : i + config.chunk_size]
         #    get_package_info_task.delay(chunk)
 

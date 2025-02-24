@@ -20,6 +20,6 @@ def get_app_info_task(apps=[]):
     apps = utils.steam.get_apps_info(apps)
 
     for app_obj in apps:
-        content = { app_obj : apps[app_obj] }
+        content = {app_obj: apps[app_obj]}
         content = json.dumps(content)
         utils.redis.write("app." + str(app_obj), content)

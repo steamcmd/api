@@ -18,13 +18,11 @@ def connect():
                 host=config.redis_host,
                 port=config.redis_port,
                 password=config.redis_password,
-                db=config.redis_database
+                db=config.redis_database,
             )
         else:
             rds = redis.Redis(
-                host=config.redis_host,
-                port=config.redis_port,
-                db=config.redis_database
+                host=config.redis_host, port=config.redis_port, db=config.redis_database
             )
 
     except Exception as error:

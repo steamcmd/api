@@ -23,10 +23,10 @@ def check_incorrect_apps_task():
 
     # use SCAN to iterate through keys that start with "app."
     while True:
-        cursor, apps = rds.scan(cursor, match='app.*')
+        cursor, apps = rds.scan(cursor, match="app.*")
         for app in apps:
             # Check if the value of the app is "false"
-            if rds.get(app) == b'false':
+            if rds.get(app) == b"false":
                 app = app.decode("UTF-8")
                 app = app.split(".")[1]
                 false_apps.append(int(app))
@@ -35,9 +35,17 @@ def check_incorrect_apps_task():
             break
 
     if len(false_apps) > 0:
-        logger.warning("Found " + str(len(false_apps)) + " apps that have a stored value of 'false'")
+        logger.warning(
+            "Found "
+            + str(len(false_apps))
+            + " apps that have a stored value of 'false'"
+        )
 
     for i in range(0, len(false_apps), config.chunk_size):
         chunk = false_apps[i : i + config.chunk_size]
-        logger.warning("Deleting " + str(chunk) + " apps from cache and starting app info retrieval again")
+        logger.warning(
+            "Deleting "
+            + str(chunk)
+            + " apps from cache and starting app info retrieval again"
+        )
         get_app_info_task.delay(chunk)

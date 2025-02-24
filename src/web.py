@@ -15,6 +15,7 @@ from fastapi import FastAPI, Response
 # initialise app
 app = FastAPI()
 
+
 # include "pretty" for backwards compatibility
 class PrettyJSONResponse(Response):
     media_type = "application/json"

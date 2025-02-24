@@ -58,7 +58,9 @@ def get_change_number():
                 with gevent.Timeout(connect_timeout):
 
                     client = init_client()
-                    info = client.get_changes_since(1, app_changes=False, package_changes=False)
+                    info = client.get_changes_since(
+                        1, app_changes=False, package_changes=False
+                    )
                     change_number = info.current_change_number
 
                     client.logout()
@@ -107,7 +109,6 @@ def get_changes_since_change_number(change_number):
 
             try:
                 with gevent.Timeout(connect_timeout):
-
 
                     client = init_client()
                     info = client.get_changes_since(
@@ -176,7 +177,9 @@ def get_apps_info(apps=[]):
 
                     client = init_client()
 
-                    logging.debug("Requesting app info from steam api", extra={"apps": str(apps)})
+                    logging.debug(
+                        "Requesting app info from steam api", extra={"apps": str(apps)}
+                    )
                     info = client.get_product_info(apps=apps, timeout=1)
                     info = info["apps"]
 
@@ -193,7 +196,9 @@ def get_apps_info(apps=[]):
                     client.logout()
 
             else:
-                logging.info("Succesfully retrieved app info", extra={"apps": str(apps)})
+                logging.info(
+                    "Succesfully retrieved app info", extra={"apps": str(apps)}
+                )
                 break
         else:
             if client:
@@ -209,7 +214,10 @@ def get_apps_info(apps=[]):
         if client:
             client._connecting = False
             client.logout()
-        logging.error("Failed in retrieving app info with error: " + str(err), extra={"apps": str(apps)})
+        logging.error(
+            "Failed in retrieving app info with error: " + str(err),
+            extra={"apps": str(apps)},
+        )
         return False
 
 
