@@ -11,53 +11,12 @@
 
 # SteamCMD API
 
-Read-only API interface for steamcmd app_info. Updates of this code are
-automatically deployed via [Github Actions](https://github.com/steamcmd/api/actions)
-when a new version has been created on Github.
+Read-only API interface for steamcmd app_info. The official API is reachable on
+[api.steamcmd.net](https://api.steamcmd.net) but can be fairly easily self-hosted.
+Read more about the public API on [www.steamcmd.net](https://www.steamcmd.net).
 
 ## Self-hosting
 
-The easiest way to host the API yourself is using the free cloud platform
-[Fly.io](https://fly.io). Install the CLI according to the documentation:
-[https://fly.io/docs/hands-on/install-flyctl/](https://fly.io/docs/hands-on/install-flyctl/).
-
-After installing, authenticate locally with the `flyctl` cli:
-```bash
-fly auth login
-```
-Create the app and redis instances (choose your own names):
-```bash
-fly apps create <app-name>
-fly redis create <redis-name>
-```
-Retrieve the Redis connection URL (you will need this later):
-```bash
-fly redis status <redis-name>
-
-Redis
-  ID             = xxxxxxxxxxxxxxxxxx
-  Name           = api
-  Plan           = Free
-  Primary Region = ams
-  Read Regions   = None
-  Eviction       = Enabled
-  Private URL    = redis://default:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@fly-api.upstash.io   <== Write the password down
-```
-Set the required configuration environment variables:
-```bash
-fly secrets set --app <app-name> \
-  CACHE=True \
-  CACHE_TYPE=redis \
-  CACHE_EXPIRATION=120 \
-  REDIS_HOST="fly-api.upstash.io" \
-  REDIS_PORT=6379 \
-  REDIS_PASSWORD="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-```
-Finally deploy the API Docker image with the latest code:
-```bash
-fly deploy --app <app-name> --image steamcmd/api:latest -e VERSION=1.0.0
-```
-The version is optional and currently only required for the `/v1/version` endpoint.
 
 ## Container
 
@@ -113,11 +72,16 @@ LOG_LEVEL=info
 
 ## Development
 
-Run the Web Service (FastAPI) locally by running the FastAPI development server:
+To develop locally start by creating a Python virtual environment and install the prerequisites:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+Run the Web Service (FastAPI) locally by running the FastAPI development server:
+```bash
+source .venv/bin/activate
 cd src/
 fastapi dev web.py
 ```
@@ -131,16 +95,6 @@ pip install -r requirements.txt
 cd src/
 celery -A job worker --loglevel=info --concurrency=2 --beat
 ```
-
-The easiest way to spin up a complete development environment is using Docker
-compose. This will build the image locally, mount the correct directory (`src`)
-and set the required environment variables. If you are on windows you should
-store the repository in the WSL filesystem or it will fail. Execute compose up
-in the root:
-```bash
-docker compose up
-```
-Now you can reach the SteamCMD API locally on [http://localhost:8000](http://localhost:8000).
 
 ### Black
 
