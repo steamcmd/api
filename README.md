@@ -12,15 +12,12 @@
 # SteamCMD API
 
 Read-only API interface for steamcmd app_info. The official API is reachable on
-[api.steamcmd.net](https://api.steamcmd.net) but can be fairly easily self-hosted.
-Read more about the public API on [www.steamcmd.net](https://www.steamcmd.net).
+[api.steamcmd.net](https://api.steamcmd.net) and it's documentation can be found
+on [www.steamcmd.net](https://www.steamcmd.net).
 
 ## Self-hosting
 
-
-## Container
-
-The API can easily be run via a Docker image which contains the API code and the
+The API can easily be run via a container image which contains the API code and the
 `uvicorn` tool to be able to respond to web requests. With every new version of
 the API the Docker images is automatically rebuild and pushed to the Docker Hub:
 ```bash
@@ -32,8 +29,16 @@ docker pull steamcmd/api:1.10.0
 ```bash
 docker run -p 8000:8000 -d steamcmd/api:latest
 ```
-However during development, using Docker Compose is preferred. See the
-[Development](#development) section for information.
+The API consists of 2 services; the **Web** and the **Job** service and the Redis
+cache. The **Job** service and the Redis cache are both optional but are both required
+if you want to run the **Job** service.
+
+Details on how the official API is hosted can be found in the
+[platform](https://github.com/steamcmd/platform) repository. This repository contains
+all the infrastructure as code that is used to deploy the API on a Kubernetes cluster.
+
+See the [Development](#development) section for more information on running
+the API and Job services directly via Python.
 
 ## Configuration
 
@@ -48,7 +53,7 @@ that you will need to set the corresponding cache settings for that type as well
 when using the **redis** type).
 
 All the available options in an `.env` file:
-```
+```shell
 # general
 VERSION=1.0.0
 
