@@ -1,4 +1,3 @@
-import config
 import gevent
 import logging
 import requests
@@ -148,6 +147,10 @@ def get_changes_since_change_number(change_number):
         if client:
             client._connecting = False
             client.logout()
+        logging.error(
+            "Failed in get changes since last change number with error: " + str(err),
+            extra={"changenumber": str(change_number)},
+        )
         return False
 
 

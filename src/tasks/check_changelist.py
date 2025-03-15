@@ -1,12 +1,10 @@
-from job import app, logger
+from job import app
 from celery_singleton import Singleton
 from .get_app_info import get_app_info_task
-from .get_package_info import get_package_info_task
 import utils.steam
 import utils.redis
 import logging
 import config
-import json
 import time
 
 
@@ -57,10 +55,6 @@ def check_changelist_task():
         for i in range(0, len(changes["apps"]), config.chunk_size):
             chunk = changes["apps"][i : i + config.chunk_size]
             get_app_info_task.delay(chunk)
-
-        # for i in range(0, len(changes["packages"]), config.chunk_size):
-        #    chunk = changes["packages"][i : i + config.chunk_size]
-        #    get_package_info_task.delay(chunk)
 
         utils.redis.write("_state.change_number", latest_change_number)
         utils.redis.increment("_state.changed_apps", len(changes["apps"]))

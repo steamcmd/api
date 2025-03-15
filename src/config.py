@@ -1,7 +1,6 @@
 import utils.general
 import utils.helper
 import logging
-import config
 from dotenv import load_dotenv
 from logfmter import Logfmter
 
