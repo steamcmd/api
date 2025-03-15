@@ -1,5 +1,12 @@
+.DS_Store
+.ruff_cache
+
 *.pyc
 __pycache__
 .venv
-.deta
 .env
+
+_test.py
+celerybeat-schedule.db
+celerybeat-schedule-*
+celerybeat-schedule

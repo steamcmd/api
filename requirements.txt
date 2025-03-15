@@ -1,10 +1,17 @@
-fastapi
-redis
-deta
-
+## general
 semver
-python-dotenv
 logfmter
 
+## web
+fastapi[standard]
+redis
+minio
+
+## steam
 steam[client]
 gevent
+
+## job
+celery
+celery-singleton
+flower
