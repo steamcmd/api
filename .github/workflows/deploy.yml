@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: check-requirements
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Parse API Version
         run: echo "API_VERSION=$(echo $GITHUB_REF | awk -F '/' '{print $NF}' | cut -c 2-)" >> $GITHUB_ENV
       - name: Docker Login
@@ -43,7 +43,7 @@ jobs:
     name: Update Readme
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Update Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
         env:
