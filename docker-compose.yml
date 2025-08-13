@@ -19,4 +19,4 @@ services:
       PYTHONUNBUFFERED: "TRUE"
     restart: always
   redis:
-    image: "redis:6.0"
+    image: "redis:8.2"
