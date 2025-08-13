@@ -1,5 +1,5 @@
 # Set the base image steamcmd
-FROM python:3.10-slim
+FROM python:3.13-slim
 
 # Set environment variables
 ENV USER steamcmd
