@@ -1,0 +1,12 @@
+## general
+semver
+logfmter
+dotenv
+
+## web
+fastapi[standard]
+redis
+
+## steam
+steam[client]
+gevent

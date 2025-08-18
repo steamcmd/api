@@ -1,0 +1,14 @@
+## general
+semver
+logfmter
+dotenv
+
+## job
+celery
+celery-singleton
+flower
+redis
+
+## steam
+steam[client]
+gevent

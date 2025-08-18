@@ -1,0 +1,11 @@
+## general
+logfmter
+dotenv
+
+## scheduler
+redis
+pika
+
+## steam
+steam[client]
+gevent

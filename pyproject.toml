@@ -1,0 +1,13 @@
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.pyright]
+reportAny = false
+reportImplicitRelativeImport = false
+reportMissingImports = false
+reportMissingModuleSource = false
+reportMissingTypeStubs = false
+reportUnknownArgumentType = false
+reportUnknownMemberType = false
+reportUnknownParameterType = false
+reportUnknownVariableType = false

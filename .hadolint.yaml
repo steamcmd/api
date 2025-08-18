@@ -1,4 +1,0 @@
-ignored:
-  - DL3008 # Pin versions in apt-get install
-  - DL3013 # Pin versions in pip
-  - DL3025 # Use JSON notation for CMD

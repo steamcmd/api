@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: gateway
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: WORKERS
+              value: "4"
+            - name: VERSION
+              value: "9.9.9"
+            - name: CACHE
+              value: "True"
+            - name: CACHE_TYPE
+              value: redis
+            - name: CACHE_EXPIRATION
+              value: "0"
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: MONGODB_HOST
+              value: mongodb
+            - name: MONGODB_PORT
+              value: "27017"
+            - name: LOG_LEVEL
+              value: info
+            - name: PYTHONUNBUFFERED
+              value: "TRUE"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  selector:
+    app: gateway
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000 

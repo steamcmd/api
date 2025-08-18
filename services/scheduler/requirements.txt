@@ -1,0 +1,7 @@
+## general
+logfmter
+dotenv
+
+## scheduler
+redis
+pika 

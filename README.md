@@ -9,6 +9,56 @@
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/steamcmd)](https://github.com/sponsors/steamcmd)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+# SteamCMD Microservices
+
+This repository is structured to support multiple microservices. The initial service is `gateway`, which contains the original application code. Additional services can be added under the `services/` directory.
+
+## Structure
+
+```
+services/
+  gateway/
+    source/
+    Dockerfile
+    requirements.txt
+    ...
+  <other-service>/
+    ...
+```
+
+- `docker-compose.yml` manages all services.
+- Each service is self-contained with its own dependencies and Dockerfile.
+
+## Adding a New Microservice
+1. Create a new directory under `services/` (e.g., `services/worker/`).
+2. Add your service code, dependencies, and Dockerfile.
+3. Update `docker-compose.yml` to include the new service.
+
+## Existing Services
+
+### gateway
+- The main entrypoint and API gateway for the system.
+- Located at `services/gateway/`.
+
+## Development
+
+- Use `tilt up` to start all services.
+- Each service can be developed and deployed independently.
+
+### Gateway
+
+To run the service locally first setup a virtual environment:
+```shell
+cd services/gateway/source
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+Then run the gunicorn command including the shared libraries:
+```shell
+PYTHONPATH="../../../libraries/python" gunicorn main:app --max-requests 3000 --max-requests-jitter 150 --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+```
+
 # SteamCMD API
 
 Read-only API interface for steamcmd app_info. The official API is reachable on

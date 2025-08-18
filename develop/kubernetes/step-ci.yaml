@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: step-ci
+spec:
+  template:
+    spec:
+      containers:
+      - name: step-ci
+        image: step-ci
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: STEPCI_DISABLE_ANALYTICS
+            value: "True"
+      restartPolicy: Never
+  backoffLimit: 4
