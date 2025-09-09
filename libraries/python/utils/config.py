@@ -28,7 +28,11 @@ log_level = utils.helper.read_env(
 version = utils.helper.read_env("VERSION", "9.9.9")
 
 # Set logging configuration
-formatter = Logfmter(keys=["date", "level"], mapping={"level": "levelname", "date": "asctime"}, datefmt="%Y-%m-%d %H:%M:%S")
+formatter = Logfmter(
+    keys=["date", "level"],
+    mapping={"level": "levelname", "date": "asctime"},
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 logging.basicConfig(

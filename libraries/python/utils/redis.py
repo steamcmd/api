@@ -11,7 +11,9 @@ def connect():
     try:
         # Try connection string, or default to separate REDIS_* env vars
         if utils.config.redis_url:
-            rds = redis.Redis.from_url(utils.config.redis_url, db=utils.config.redis_database)
+            rds = redis.Redis.from_url(
+                utils.config.redis_url, db=utils.config.redis_database
+            )
 
         elif utils.config.redis_password:
             rds = redis.Redis(
@@ -22,7 +24,9 @@ def connect():
             )
         else:
             rds = redis.Redis(
-                host=utils.config.redis_host, port=utils.config.redis_port, db=utils.config.redis_database
+                host=utils.config.redis_host,
+                port=utils.config.redis_port,
+                db=utils.config.redis_database,
             )
 
     except Exception as error:

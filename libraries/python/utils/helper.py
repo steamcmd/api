@@ -29,7 +29,7 @@ def read_env(
     default: str | int | None = None,
     choices: list[str] | None = None,
     dependency: dict[str, str] | None = None,
-    type: str = "string"
+    type: str = "string",
 ) -> str | int | None:
     """
     Get value from environment variable and return
@@ -79,7 +79,10 @@ def read_env(
         case "integer":
             return int(value)
         case _:
-            logging.critical("Type of the variable is incorrect", extra={"key": key, "value": value, "type": type})
+            logging.critical(
+                "Type of the variable is incorrect",
+                extra={"key": key, "value": value, "type": type},
+            )
             sys.exit(1)
 
     return value
