@@ -1,5 +1,4 @@
 import logging
-import sys
 
 
 def log_level(level: str) -> int:

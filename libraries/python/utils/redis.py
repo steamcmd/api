@@ -1,4 +1,4 @@
-import utils.config as config
+import utils.config
 import logging
 import redis
 
@@ -10,19 +10,19 @@ def connect():
 
     try:
         # Try connection string, or default to separate REDIS_* env vars
-        if config.redis_url:
-            rds = redis.Redis.from_url(config.redis_url, db=config.redis_database)
+        if utils.config.redis_url:
+            rds = redis.Redis.from_url(utils.config.redis_url, db=utils.config.redis_database)
 
-        elif config.redis_password:
+        elif utils.config.redis_password:
             rds = redis.Redis(
-                host=config.redis_host,
-                port=config.redis_port,
-                password=config.redis_password,
-                db=config.redis_database,
+                host=utils.config.redis_host,
+                port=utils.config.redis_port,
+                password=utils.config.redis_password,
+                db=utils.config.redis_database,
             )
         else:
             rds = redis.Redis(
-                host=config.redis_host, port=config.redis_port, db=config.redis_database
+                host=utils.config.redis_host, port=utils.config.redis_port, db=utils.config.redis_database
             )
 
     except Exception as error:
@@ -125,7 +125,7 @@ def delete(key: str):
     return None
 
 
-def keys(name: str) -> list[str]:
+def keys(name: str) -> list[str] | None:
     """
     List keys stored in Redis that optionally
     contain specified string in key name.
@@ -133,7 +133,7 @@ def keys(name: str) -> list[str]:
 
     rds = connect()
     if not rds:
-        return False
+        return None
 
     try:
         # TODO: Write actual code in this try block instead of pseudo
@@ -174,7 +174,7 @@ def increment(key: str, amount: int = 1):
 
     rds = connect()
     if not rds:
-        return False
+        return None
 
     # increment data of key
     try:

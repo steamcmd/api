@@ -26,10 +26,11 @@ def list_tasks():
 
 def read_env(
     key: str,
-    default: str | None = None,
+    default: str | int | None = None,
     choices: list[str] | None = None,
     dependency: dict[str, str] | None = None,
-) -> str | None:
+    type: str = "string"
+) -> str | int | None:
     """
     Get value from environment variable and return
     None if not exist. Optionally checks if other
@@ -68,6 +69,18 @@ def read_env(
                         + "'"
                     )
                     sys.exit(1)
+
+    if value is None:
+        return None
+
+    match type:
+        case "string":
+            return str(value)
+        case "integer":
+            return int(value)
+        case _:
+            logging.critical("Type of the variable is incorrect", extra={"key": key, "value": value, "type": type})
+            sys.exit(1)
 
     return value
 

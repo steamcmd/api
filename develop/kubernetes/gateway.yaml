@@ -19,28 +19,24 @@ spec:
           ports:
             - containerPort: 8000
           env:
-            - name: WORKERS
-              value: "4"
             - name: VERSION
               value: "9.9.9"
-            - name: CACHE
-              value: "True"
-            - name: CACHE_TYPE
-              value: redis
-            - name: CACHE_EXPIRATION
-              value: "0"
             - name: REDIS_HOST
               value: redis
             - name: REDIS_PORT
               value: "6379"
-            - name: MONGODB_HOST
-              value: mongodb
-            - name: MONGODB_PORT
-              value: "27017"
             - name: LOG_LEVEL
               value: info
             - name: PYTHONUNBUFFERED
               value: "TRUE"
+            - name: RABBITMQ_USER
+              value: user
+            - name: RABBITMQ_PASSWORD
+              value: password
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+            - name: RABBITMQ_PORT
+              value: "5672"
 
 ---
 apiVersion: v1
@@ -53,4 +49,4 @@ spec:
   ports:
     - protocol: TCP
       port: 8000
-      targetPort: 8000 
+      targetPort: 8000

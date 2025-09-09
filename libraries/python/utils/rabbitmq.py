@@ -16,7 +16,7 @@ def connect():
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(
                 host=utils.config.rabbitmq_host,
-                port=int(utils.config.rabbitmq_port),
+                port=utils.config.rabbitmq_port,
                 credentials=credentials,
             )
         )
