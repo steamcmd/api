@@ -7,10 +7,13 @@ import utils.redis
 import utils.steam
 import config
 import json
+import time
 import semver
 import typing
+import hashlib
 import logging
-from fastapi import FastAPI, Response
+import email.utils
+from fastapi import FastAPI, Request, Response
 
 # initialise app
 app = FastAPI()
@@ -31,10 +34,80 @@ class PrettyJSONResponse(Response):
             return json.dumps(content, sort_keys=True).encode("utf-8")
 
 
+def etag_matches(header, etag):
+    """
+    Check if the If-None-Match header
+    matches the specified ETag.
+    """
+    if header.strip() == "*":
+        return True
+    candidates = [tag.strip().removeprefix("W/") for tag in header.split(",")]
+    return etag.removeprefix("W/") in candidates
+
+
+def not_modified(request, etag, last_modified):
+    """
+    Check conditional request headers and return
+    True if the client data is not modified.
+    """
+    if_none_match = request.headers.get("if-none-match")
+    if if_none_match is not None:
+        # check etag first if provided
+        return etag_matches(if_none_match, etag)
+
+    if_modified_since = request.headers.get("if-modified-since")
+    if if_modified_since and last_modified is not None:
+        try:
+            since = email.utils.parsedate_to_datetime(if_modified_since).timestamp()
+        except (TypeError, ValueError):
+            return False
+        return last_modified <= since
+
+    return False
+
+
+def read_last_modified(app_id):
+    """
+    Read last modified timestamp of app from
+    cache and set it to now if not exist.
+    """
+    key = "modified.app." + str(app_id)
+    modified = utils.redis.read(key)
+    if not modified:
+        utils.redis.write(key, str(int(time.time())), only_if_missing=True)
+        modified = utils.redis.read(key)
+    if not modified:
+        return None
+    try:
+        return int(modified)
+    except (TypeError, ValueError):
+        return None
+
+
+def conditional_response(request, content, last_modified=None):
+    """
+    Generate JSON response with ETag and Last-Modified
+    headers or return 304 if not modified.
+    """
+    response = PrettyJSONResponse(content)
+    etag = '"' + hashlib.sha1(response.body).hexdigest() + '"'
+
+    headers = {"ETag": etag}
+    if last_modified is not None:
+        headers["Last-Modified"] = email.utils.formatdate(last_modified, usegmt=True)
+
+    if not_modified(request, etag, last_modified):
+        return Response(status_code=304, headers=headers)
+
+    response.headers.update(headers)
+    return response
+
+
 @app.get("/v1/info/{app_id}", response_class=PrettyJSONResponse)
-def read_app(app_id: int, pretty: bool = False):
+def read_app(request: Request, app_id: int, pretty: bool = False):
     logging.info("Requested app info", extra={"apps": str([app_id])})
 
+    last_modified = None
     if config.cache == "True":
         info = utils.redis.read("app." + str(app_id))
 
@@ -44,6 +117,7 @@ def read_app(app_id: int, pretty: bool = False):
             )
         else:
             info = json.loads(info)
+            last_modified = read_last_modified(app_id)
             logging.info(
                 "App info succesfully retrieved from cache",
                 extra={"apps": str([app_id])},
@@ -69,7 +143,9 @@ def read_app(app_id: int, pretty: bool = False):
         return {"data": {app_id: {}}, "status": "success", "pretty": pretty}
 
     logging.info("Succesfully retrieved app info", extra={"apps": str([app_id])})
-    return {"data": info, "status": "success", "pretty": pretty}
+    return conditional_response(
+        request, {"data": info, "status": "success", "pretty": pretty}, last_modified
+    )
 
 
 @app.get("/v1/version", response_class=PrettyJSONResponse)

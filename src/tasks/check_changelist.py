@@ -8,7 +8,7 @@ import config
 import time
 
 
-@app.task(name="check_changelist", base=Singleton, lock_expiry=10)
+@app.task(name="check_changelist", base=Singleton, lock_expiry=60)
 def check_changelist_task():
     """
     Check for app and package changes between changelists
@@ -44,13 +44,23 @@ def check_changelist_task():
             + " to "
             + str(latest_change_number)
         )
-        changes = utils.steam.get_changes_since_change_number(previous_change_number)
-
-        while not changes:
+        # retry limited amount of times to avoid deadlocks
+        changes = False
+        for _ in range(config.changes_retries):
             changes = utils.steam.get_changes_since_change_number(
                 previous_change_number
             )
+            if changes:
+                break
             time.sleep(1)
+
+        if not changes:
+            logging.error(
+                "Could not retrieve changes since change number "
+                + str(previous_change_number)
+                + ". Retrying on the next run"
+            )
+            return
 
         for i in range(0, len(changes["apps"]), config.chunk_size):
             chunk = changes["apps"][i : i + config.chunk_size]
