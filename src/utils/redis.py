@@ -121,9 +121,10 @@ def read(key):
         return False
 
 
-def write(key, data):
+def write(key, data, only_if_missing=False):
     """
-    Write specified key to Redis.
+    Write specified key to Redis. When only_if_missing
+    is set, an existing key is left untouched.
     """
     rds = connect()
 
@@ -137,9 +138,9 @@ def write(key, data):
 
         # insert data into Redis
         if expiration == 0:
-            rds.set(key, data)
+            rds.set(key, data, nx=only_if_missing)
         else:
-            rds.set(key, data, ex=expiration)
+            rds.set(key, data, ex=expiration, nx=only_if_missing)
 
         # return success status
         return True

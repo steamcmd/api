@@ -34,6 +34,7 @@ version = utils.helper.read_env("VERSION", "9.9.9")
 
 # Set general settings
 chunk_size = 10
+changes_retries = 5
 
 # Logging configuration
 formatter = Logfmter(keys=["level"], mapping={"level": "levelname"})
