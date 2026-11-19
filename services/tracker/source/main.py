@@ -2,14 +2,24 @@
 Tracker Service.
 """
 
+# Patch blocking modules for gevent
+from gevent import monkey
+
+_ = monkey.patch_all()
+
 # Import modules
 import utils.redis
 import utils.rabbitmq
 import utils.steam
 import logging
-import time
+import gevent
 import signal
 import sys
+
+# Set loop settings
+POLL_INTERVAL = 0.3
+MAX_BACKOFF = 60
+MAX_CONSECUTIVE_FAILURES = 20
 
 
 ## Initialize
@@ -22,22 +32,28 @@ def main():
     _ = signal.signal(signal.SIGTERM, signal_handler)
     _ = signal.signal(signal.SIGINT, signal_handler)
 
-    # Initialize steam client
     previous_change_number = 0
-    client = utils.steam.init_client()
+    client = None
+    failures = 0
 
     try:
         while True:
             try:
+                # Reconnect steam client if not logged on
+                client = utils.steam.ensure_client(client)
+                if client is None:
+                    raise RuntimeError("Steam client is not available")
+
                 # Read latest change number from cache if not set in memory
                 if previous_change_number == 0:
-                    if utils.redis.read("_state.change_number"):
-                        previous_change_number = int(
-                            utils.redis.read("_state.change_number")
-                        )
+                    cached_change_number = utils.redis.read("_state.change_number")
+                    if cached_change_number:
+                        previous_change_number = int(cached_change_number)
 
                 # Retrieve latest change number directly from Steam
                 change_number = utils.steam.get_change_number(client)
+                if change_number is None:
+                    raise RuntimeError("Retrieving change number failed")
 
                 if change_number == previous_change_number:
                     logging.info(
@@ -49,6 +65,9 @@ def main():
                     app_list = utils.steam.get_changed_apps(
                         client, previous_change_number
                     )
+                    if app_list is None:
+                        raise RuntimeError("Retrieving changed apps failed")
+
                     logging.info(
                         "Changenumber changed",
                         extra={
@@ -64,29 +83,46 @@ def main():
 
                     # Publish a message to RabbitMQ for each changed app
                     for appid in app_list:
-                        # Set message JSON object and publish
-                        utils.rabbitmq.message("info", {"id": appid})
+                        if not utils.rabbitmq.message("info", {"id": appid}):
+                            raise RuntimeError(
+                                "Publishing app info message failed for app "
+                                + str(appid)
+                            )
 
                     # Make previous change number the current
                     utils.redis.write("_state.change_number", change_number)
                     previous_change_number = change_number
 
+                failures = 0
+
                 # Wait shortly before continueing in the loop
-                time.sleep(0.3)
+                gevent.sleep(POLL_INTERVAL)
 
             except Exception as err:
-                logging.error("Failure during loop", extra={"error": err})
-                break
+                # Reset steam client and wait before retrying
+                failures += 1
+                logging.error(
+                    "Failure during loop",
+                    extra={"error": repr(err), "consecutive_failures": failures},
+                )
+                utils.steam.close_client(client)
+                client = None
 
-        # Logout Steam Client if loop breaks
-        client.logout()
+                if failures >= MAX_CONSECUTIVE_FAILURES:
+                    logging.critical(
+                        "Too many consecutive failures. Exiting so the service is restarted",
+                        extra={"consecutive_failures": failures},
+                    )
+                    sys.exit(1)
+
+                gevent.sleep(min(2**failures, MAX_BACKOFF))
 
     # Shutdown tracker if shutdown signal is received
     except (KeyboardInterrupt, SystemExit):
-        logging.info("Received shutdown signal..")
-
-    logging.info("Logging out steam client..")
-    client.logout()
+        logging.info("Shutting down tracker..")
+        logging.info("Logging out steam client..")
+        utils.steam.close_client(client)
+        raise
 
 
 if __name__ == "__main__":

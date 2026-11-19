@@ -1,6 +1,14 @@
 import logging
+import gevent
 import requests
 from steam.client import SteamClient
+from steam.enums import EResult
+
+# Set connection settings
+CONNECT_RETRIES = 3
+LOGIN_TIMEOUT = 45
+LOGOUT_TIMEOUT = 10
+REQUEST_TIMEOUT = 15
 
 
 def init_client() -> SteamClient | None:
@@ -9,17 +17,78 @@ def init_client() -> SteamClient | None:
     return the client.
     """
 
+    client = SteamClient()
+    client.verbose_debug = False
+
     try:
         logging.info("Initializing steam client..")
-        client = SteamClient()
-        _ = client.anonymous_login()
-        _ = client.verbose_debug = False
+        with gevent.Timeout(LOGIN_TIMEOUT):
+            if not client.connect(retry=CONNECT_RETRIES):
+                logging.error(
+                    "Connecting to Steam failed",
+                    extra={"connect_retries": CONNECT_RETRIES},
+                )
+                close_client(client)
+                return None
 
-    except Exception as err:
-        logging.error("Initializing Steam client failed. Error: %s", err)
+            result = client.anonymous_login()
+
+    except (Exception, gevent.Timeout) as err:
+        logging.error("Initializing Steam client failed. Error: %s", repr(err))
+        close_client(client)
+        return None
+
+    if result != EResult.OK:
+        logging.error("Anonymous login to Steam failed. Result: %s", repr(result))
+        close_client(client)
         return None
 
     return client
+
+
+def close_client(client: SteamClient | None) -> None:
+    """
+    Logout and disconnect the Steam client.
+    """
+
+    if client is None:
+        return
+
+    try:
+        with gevent.Timeout(LOGOUT_TIMEOUT):
+            client.logout()
+    except (Exception, gevent.Timeout) as err:
+        logging.debug("Logging out Steam client failed. Error: %s", repr(err))
+
+    try:
+        client.disconnect()
+    except Exception as err:
+        logging.debug("Disconnecting Steam client failed. Error: %s", repr(err))
+
+
+def is_ready(client: SteamClient | None) -> bool:
+    """
+    Check if the Steam client is connected
+    and logged on.
+    """
+
+    return client is not None and bool(client.connected) and bool(client.logged_on)
+
+
+def ensure_client(client: SteamClient | None) -> SteamClient | None:
+    """
+    Return the client if logged on, otherwise
+    initialize and return a new client.
+    """
+
+    if is_ready(client):
+        return client
+
+    if client is not None:
+        logging.warning("Steam client lost its connection. Reconnecting..")
+        close_client(client)
+
+    return init_client()
 
 
 def get_app_list() -> list[int] | None:
@@ -49,11 +118,15 @@ def get_change_number(client: SteamClient) -> int | None:
     """
 
     try:
-        info = client.get_changes_since(1, app_changes=False, package_changes=False)
+        with gevent.Timeout(REQUEST_TIMEOUT):
+            info = client.get_changes_since(1, app_changes=False, package_changes=False)
+        if info is None:
+            logging.error("Retrieving change number failed. No response from Steam")
+            return None
         change_number = info.current_change_number
 
-    except Exception as err:
-        logging.error("Retrieving change number failed. Error: %s", err)
+    except (Exception, gevent.Timeout) as err:
+        logging.error("Retrieving change number failed. Error: %s", repr(err))
         return None
 
     return change_number
@@ -68,18 +141,25 @@ def get_changed_apps(
     """
 
     try:
-        info = client.get_changes_since(
-            previous_change_number, app_changes=True, package_changes=False
-        )
+        with gevent.Timeout(REQUEST_TIMEOUT):
+            info = client.get_changes_since(
+                previous_change_number, app_changes=True, package_changes=False
+            )
+        if info is None:
+            logging.error(
+                "Get changed apps since change number failed. No response from Steam",
+                extra={"previous_change_number": previous_change_number},
+            )
+            return None
         app_list = []
         if info.app_changes:
             for app in info.app_changes:
                 app_list.append(app.appid)
 
-    except Exception as err:
+    except (Exception, gevent.Timeout) as err:
         logging.error(
             "Get changed apps since change number failed. Error: %s",
-            err,
+            repr(err),
             extra={"previous_change_number": previous_change_number},
         )
         return None
@@ -94,15 +174,17 @@ def get_apps_info(client: SteamClient, apps: list[int]):
     """
 
     try:
-        info = client.get_product_info(apps=apps, timeout=3)
+        # Query app info with timeout
+        with gevent.Timeout(REQUEST_TIMEOUT):
+            info = client.get_product_info(apps=apps, timeout=3)
         if info is None:
             logging.error("Querying app info failed. Result is None")
             return None
         info = info["apps"]
 
-    except Exception as err:
+    except (Exception, gevent.Timeout) as err:
         logging.error(
-            "Querying app info failed. Error: %s", err, extra={"apps": str(apps)}
+            "Querying app info failed. Error: %s", repr(err), extra={"apps": str(apps)}
         )
         return None
 

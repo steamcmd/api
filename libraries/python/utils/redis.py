@@ -72,9 +72,12 @@ def read(key: str):
     return None
 
 
-def write(key: str, data: str | int, expiration: int = 0):
+def write(
+    key: str, data: str | int, expiration: int = 0, only_if_missing: bool = False
+):
     """
-    Write specified key to Redis.
+    Write specified key to Redis. Optionally
+    only write if key does not exist yet.
     """
 
     rds = connect()
@@ -85,9 +88,9 @@ def write(key: str, data: str | int, expiration: int = 0):
     try:
         # Insert data into Redis
         if expiration == 0:
-            _ = rds.set(key, data)
+            _ = rds.set(key, data, nx=only_if_missing)
         else:
-            _ = rds.set(key, data, ex=expiration)
+            _ = rds.set(key, data, ex=expiration, nx=only_if_missing)
 
         # Return succes status
         return True

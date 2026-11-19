@@ -2,6 +2,11 @@
 Worker Service.
 """
 
+# Patch blocking modules for gevent
+from gevent import monkey
+
+_ = monkey.patch_all()
+
 # Import modules
 import utils.rabbitmq
 import utils.steam
@@ -26,6 +31,8 @@ def main():
 
     # Initialize steam client
     client = utils.steam.init_client()
+    if client is None:
+        logging.warning("Steam client not available yet. Retrying on first message")
 
     # Import tasks dynamically
     import tasks
@@ -34,8 +41,15 @@ def main():
 
     # Process message based on type definition
     def process_message(_channel: BlockingChannel, _method: Basic.Deliver, body: bytes):
+        nonlocal client
+
         # Set message JSON object for queue
         try:
+            # Reconnect steam client if not logged on
+            client = utils.steam.ensure_client(client)
+            if client is None:
+                raise RuntimeError("Steam client is not available")
+
             message = body.decode("utf-8")
             message = json.loads(message)
             function = message["type"]
@@ -51,7 +65,7 @@ def main():
         except Exception as err:
             logging.error(
                 "Failed processing message from queue",
-                extra={"error": err, "payload_raw": body},
+                extra={"error": repr(err), "payload_raw": body},
             )
 
     # Wait for messages on RabbitMQ queue
@@ -63,7 +77,7 @@ def main():
         logging.info("Received shutdown signal...")
 
     logging.info("Logging out steam client..")
-    client.logout()
+    utils.steam.close_client(client)
 
 
 if __name__ == "__main__":
